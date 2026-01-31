@@ -452,7 +452,7 @@
         const STATUS_MAP = {
             'ORDER_RECEIVED': 1,        // Stage 1: Order Received
             'Payment Received': 2,      // Stage 2: Payment Verified
-            'DELIVERED': 3              // Stage 3: Order Dispatched & Delivered
+            'Delivered': 3              // Stage 3: Order Dispatched & Delivered
         };
 
         // ONLY 3 TRACKING STEPS (matching your Google Sheet statuses)
@@ -686,7 +686,7 @@
                 }
                 
                 // Special case for "Delivered" - all 3 steps completed
-                if (order.status === 'DELIVERED' && stepNumber <= 3) {
+                if (order.status === 'Delivered' && stepNumber <= 3) {
                     stepClass = 'completed';
                 }
                 
