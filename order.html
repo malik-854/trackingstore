@@ -580,7 +580,6 @@
                                 <th width="10%">QTY</th>
                                 <th width="15%">PRICE</th>
                                 <th width="15%">RATE/KG</th>
-                                <th width="10%">WEIGHT</th>
                                 <th width="15%">TOTAL</th>
                             </tr>
                         </thead>
@@ -601,7 +600,6 @@
                             <td>${item.qty}</td>
                             <td>Rs ${formatNumber(item.price)}</td>
                             <td>Rs ${item.rate || 'N/A'}</td>
-                            <td>${itemWeight} KG</td>
                             <td><strong>Rs ${formatNumber(itemTotal)}</strong></td>
                         </tr>
                     `;
@@ -631,10 +629,6 @@
             }
             
             priceSummaryHTML += `
-                    <div class="summary-row">
-                        <div class="summary-label">Total Weight</div>
-                        <div class="summary-value">${Math.round(order.totalWeight || 0)} KG</div>
-                    </div>
                     <div class="summary-row grand-total">
                         <div class="summary-label">GRAND TOTAL</div>
                         <div class="summary-value">Rs ${formatNumber(order.totalAmount || 0)}</div>
@@ -721,10 +715,6 @@
                     <div class="order-info-row">
                         <div class="order-info-label">Items Count:</div>
                         <div class="order-info-value">${itemsCount}</div>
-                    </div>
-                    <div class="order-info-row">
-                        <div class="order-info-label">Total Weight:</div>
-                        <div class="order-info-value">${Math.round(order.totalWeight || 0)} KG</div>
                     </div>
                 </div>
             `;
