@@ -5,411 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hayyat Paper Store - Order Verification</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .container {
-            max-width: 1100px;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 30px;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-        }
-        
-        .invoice-box {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border: 3px solid #2c3e50;
-        }
-        
-        .tracking-box {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border: 3px solid #3498db;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #2c3e50;
-        }
-        
-        .header h1 {
-            color: #2c3e50;
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        
-        .order-id {
-            background: #ff8400;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 50px;
-            display: inline-block;
-            font-weight: bold;
-            font-size: 18px;
-            margin-top: 10px;
-            letter-spacing: 1px;
-        }
-        
-        /* Customer Info Section */
-        .customer-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            border-left: 5px solid #2c3e50;
-        }
-        
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 15px;
-        }
-        
-        @media (max-width: 480px) {
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .info-item {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .info-label {
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 14px;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .info-label i {
-            color: #3498db;
-        }
-        
-        .info-value {
-            color: #34495e;
-            font-weight: 700;
-            font-size: 16px;
-            padding: 8px 0;
-        }
-        
-        /* Items Table */
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 25px 0;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-        }
-        
-        .items-table th {
-            background: #2c3e50;
-            color: white;
-            padding: 14px 12px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 15px;
-        }
-        
-        .items-table td {
-            padding: 14px 12px;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-        }
-        
-        .items-table tr:nth-child(even) {
-            background: #f8f9fa;
-        }
-        
-        .items-table tr:hover {
-            background: #e3f2fd;
-        }
-        
-        .product-cell {
-            font-weight: 700;
-            color: #2c3e50;
-        }
-        
-        .specs {
-            font-size: 13px;
-            color: #666;
-            margin-top: 4px;
-        }
-        
-        /* Price Summary */
-        .price-summary {
-            background: #2c3e50;
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-top: 25px;
-        }
-        
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .summary-row:last-child {
-            border-bottom: none;
-        }
-        
-        .summary-label {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-        
-        .summary-value {
-            font-size: 16px;
-            font-weight: 700;
-        }
-        
-        .grand-total {
-            font-size: 22px;
-            font-weight: 900;
-            color: #f1c40f;
-            margin-top: 10px;
-        }
-        
-        /* Warning */
-        .warning {
-            background: #fff3cd;
-            border: 2px solid #ffeaa7;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            margin-top: 25px;
-            font-size: 14px;
-            color: #856404;
-            font-weight: 600;
-        }
-        
-        /* Tracking Section */
-        .tracking-header {
-            text-align: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #3498db;
-        }
-        
-        .tracking-header h2 {
-            color: #3498db;
-            font-size: 22px;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 8px 20px;
-            background: #e74c3c;
-            color: white;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 16px;
-            margin-bottom: 25px;
-            text-align: center;
-            width: 100%;
-        }
-        
-        .status-received { background: #3498db; }
-        .status-paid { background: #9b59b6; }
-        .status-dispatched { background: #e67e22; }
-        .status-delivered { background: #2ecc71; }
-        
-        .steps-container {
-            position: relative;
-            padding: 20px 0 0 40px;
-        }
-        
-        .step {
-            display: flex;
-            align-items: center;
-            margin-bottom: 35px;
-            position: relative;
-        }
-        
-        .step-icon {
-            position: absolute;
-            left: -40px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-            z-index: 2;
-            border: 4px solid white;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        
-        .step.active .step-icon {
-            background: #27ae60;
-            color: white;
-        }
-        
-        .step.completed .step-icon {
-            background: #2ecc71;
-            color: white;
-        }
-        
-        .step.inactive .step-icon {
-            background: #ecf0f1;
-            color: #95a5a6;
-        }
-        
-        .step.completed .step-icon::after {
-            content: '✓';
-        }
-        
-        .step-content {
-            background: #f8f9fa;
-            padding: 18px;
-            border-radius: 10px;
-            flex: 1;
-            border-left: 4px solid #ddd;
-        }
-        
-        .step.active .step-content {
-            border-left-color: #27ae60;
-            background: #e8f6ef;
-        }
-        
-        .step.completed .step-content {
-            border-left-color: #2ecc71;
-            background: #e8f6ef;
-        }
-        
-        .step-title {
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 5px;
-            font-size: 16px;
-        }
-        
-        .step.active .step-title {
-            color: #27ae60;
-        }
-        
-        .step.completed .step-title {
-            color: #2ecc71;
-        }
-        
-        .step-desc {
-            color: #7f8c8d;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        
-        /* Order Info */
-        .order-info {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-        
-        .order-info-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px dashed #ddd;
-        }
-        
-        .order-info-label {
-            font-weight: 600;
-            color: #2c3e50;
-        }
-        
-        .order-info-value {
-            color: #34495e;
-            font-weight: 700;
-        }
-        
-        /* Loading */
-        .loading {
-            text-align: center;
-            padding: 50px;
-            color: #7f8c8d;
-        }
-        
-        .loading-spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Error */
-        .error {
-            background: #f8d7da;
-            border: 2px solid #f5c6cb;
-            border-radius: 10px;
-            padding: 30px;
-            text-align: center;
-            color: #721c24;
-        }
-        
-        .whatsapp-btn {
-            display: block;
-            width: 100%;
-            background: #25D366;
-            color: white;
-            text-align: center;
-            padding: 15px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 16px;
-            margin-top: 20px;
-            transition: background 0.3s;
-        }
-        
-        .whatsapp-btn:hover {
-            background: #1DA851;
-        }
+        /* ... (keep all your CSS styles as they are) ... */
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -449,47 +45,38 @@
         //  URL
         const API_URL = 'https://script.google.com/macros/s/AKfycbwGEoUZfl7CjfQz-iCibfj1Y-LbVWvoCPDLr5gtJPOZv7qaVzjP66CeGe8zk9QNg8BZRA/exec';
         
-        // Status mapping - Payment Received activates BOTH step 2 and 3
-const STATUS_MAP = {
-    'Order Received': 1,
-    'Payment Received': 3,  // CHANGED: Jumps directly to step 3
-    'Order Dispatched': 3,
-    'Delivered': 4
-};
+        // Status mapping - ONLY 4 STAGES
+        const STATUS_MAP = {
+            'Order Received': 1,
+            'Payment Received': 3,  // This activates both stage 2 AND 3
+            'Order Dispatched': 4,
+            'Delivered': 5
+        };
 
-// Tracking steps configuration
-const TRACKING_STEPS = [
-    { 
-        icon: 'fas fa-clipboard-check', 
-        title: 'Order Received', 
-        description: 'Order has been received and is being processed',
-        statusKey: 'Order Received'
-    },
-    { 
-        icon: 'fas fa-money-check-alt', 
-        title: 'Payment Verified', 
-        description: 'Payment has been received and verified',
-        statusKey: 'Order Received'  // Will be active when Order Received
-    },
-    { 
-        icon: 'fas fa-cogs', 
-        title: 'Order Processing', 
-        description: 'Order is being processed',
-        statusKey: 'Payment Received'  // Will be active when Payment Received
-    },
-    { 
-        icon: 'fas fa-shipping-fast', 
-        title: 'Order Dispatched', 
-        description: 'Order has been dispatched for delivery',
-        statusKey: 'Order Dispatched'
-    },
-    { 
-        icon: 'fas fa-home', 
-        title: 'Delivered', 
-        description: 'Order has been delivered successfully',
-        statusKey: 'Delivered'
-    }
-];
+        // ONLY 4 TRACKING STEPS - stage 2 and 3 both controlled by Payment Received
+        const TRACKING_STEPS = [
+            { 
+                icon: 'fas fa-clipboard-check', 
+                title: 'Order Received', 
+                description: 'Order has been received and is being processed'
+            },
+            { 
+                icon: 'fas fa-money-check-alt', 
+                title: 'Payment Verified', 
+                description: 'Payment has been received and verified'
+            },
+            { 
+                icon: 'fas fa-cogs', 
+                title: 'Order Processing', 
+                description: 'Order is being processed'
+            },
+            { 
+                icon: 'fas fa-shipping-fast', 
+                title: 'Order Dispatched', 
+                description: 'Order has been dispatched for delivery'
+            }
+            // Note: Delivered status will be shown as completed stage 4
+        ];
         
         let currentOrder = null;
         let refreshInterval = null;
@@ -673,88 +260,96 @@ const TRACKING_STEPS = [
             document.getElementById('orderId').textContent = order.orderId;
         }
         
-        // Render tracking content
-       // Render tracking content
-function renderTracking(order) {
-    const trackingContent = document.getElementById('trackingContent');
-    
-    // Status badge
-    let statusClass = 'status-received';
-    if (order.status === 'Payment Received') statusClass = 'status-paid';
-    else if (order.status === 'Order Dispatched') statusClass = 'status-dispatched';
-    else if (order.status === 'Delivered') statusClass = 'status-delivered';
-    
-    let trackingHTML = `
-        <div class="status-badge ${statusClass}">${order.status}</div>
-        <div class="steps-container">
-    `;
-    
-    // Tracking steps with special logic for Payment Received
-    TRACKING_STEPS.forEach((step, index) => {
-        const stepNumber = index + 1;
-        let stepClass = 'inactive';
-        
-        // Special logic for Payment Received
-        if (order.status === 'Payment Received') {
-            // Show steps 1, 2, 3 as completed/active
-            if (stepNumber <= 3) {
-                stepClass = 'completed';
-            }
-            if (stepNumber === 3) {
-                stepClass = 'active';
-            }
-        }
-        // Normal logic for other statuses
-        else {
+        // Render tracking content - SIMPLIFIED FOR 4 STAGES
+        function renderTracking(order) {
+            const trackingContent = document.getElementById('trackingContent');
+            
+            // Status badge
+            let statusClass = 'status-received';
+            if (order.status === 'Payment Received') statusClass = 'status-paid';
+            else if (order.status === 'Order Dispatched') statusClass = 'status-dispatched';
+            else if (order.status === 'Delivered') statusClass = 'status-delivered';
+            
+            let trackingHTML = `
+                <div class="status-badge ${statusClass}">${order.status}</div>
+                <div class="steps-container">
+            `;
+            
+            // Get current status index
             const currentStatusIndex = STATUS_MAP[order.status] || 1;
-            if (stepNumber < currentStatusIndex) {
-                stepClass = 'completed';
-            } else if (stepNumber === currentStatusIndex) {
-                stepClass = 'active';
+            
+            // Render 4 tracking steps
+            TRACKING_STEPS.forEach((step, index) => {
+                const stepNumber = index + 1;
+                let stepClass = 'inactive';
+                
+                if (stepNumber < currentStatusIndex) {
+                    stepClass = 'completed';
+                } else if (stepNumber === currentStatusIndex) {
+                    stepClass = 'active';
+                }
+                
+                // Special case for "Delivered" - all 4 steps completed
+                if (order.status === 'Delivered' && stepNumber <= 4) {
+                    stepClass = 'completed';
+                }
+                
+                trackingHTML += `
+                    <div class="step ${stepClass}">
+                        <div class="step-icon">
+                            <i class="${step.icon}"></i>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-title">${step.title}</div>
+                            <div class="step-desc">${step.description}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // Add a 5th step for "Delivered" status if needed
+            if (order.status === 'Delivered') {
+                trackingHTML += `
+                    <div class="step completed">
+                        <div class="step-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-title">Delivered</div>
+                            <div class="step-desc">Order has been delivered successfully</div>
+                        </div>
+                    </div>
+                `;
             }
+            
+            trackingHTML += `</div>`;
+            
+            // Order info
+            const itemsCount = order.orderItems ? order.orderItems.reduce((sum, item) => sum + item.qty, 0) : 0;
+            
+            trackingHTML += `
+                <div class="order-info">
+                    <div class="order-info-row">
+                        <div class="order-info-label">Order Date:</div>
+                        <div class="order-info-value">${formatDate(order.timestamp)}</div>
+                    </div>
+                    <div class="order-info-row">
+                        <div class="order-info-label">Last Updated:</div>
+                        <div class="order-info-value">${formatDate(order.lastUpdated || order.timestamp)}</div>
+                    </div>
+                    <div class="order-info-row">
+                        <div class="order-info-label">Items Count:</div>
+                        <div class="order-info-value">${itemsCount}</div>
+                    </div>
+                    <div class="order-info-row">
+                        <div class="order-info-label">Total Weight:</div>
+                        <div class="order-info-value">${Math.round(order.totalWeight || 0)} KG</div>
+                    </div>
+                </div>
+            `;
+            
+            trackingContent.innerHTML = trackingHTML;
         }
-        
-        trackingHTML += `
-            <div class="step ${stepClass}">
-                <div class="step-icon">
-                    <i class="${step.icon}"></i>
-                </div>
-                <div class="step-content">
-                    <div class="step-title">${step.title}</div>
-                    <div class="step-desc">${step.description}</div>
-                </div>
-            </div>
-        `;
-    });
-    
-    trackingHTML += `</div>`;
-    
-    // Order info
-    const itemsCount = order.orderItems ? order.orderItems.reduce((sum, item) => sum + item.qty, 0) : 0;
-    
-    trackingHTML += `
-        <div class="order-info">
-            <div class="order-info-row">
-                <div class="order-info-label">Order Date:</div>
-                <div class="order-info-value">${formatDate(order.timestamp)}</div>
-            </div>
-            <div class="order-info-row">
-                <div class="order-info-label">Last Updated:</div>
-                <div class="order-info-value">${formatDate(order.lastUpdated || order.timestamp)}</div>
-            </div>
-            <div class="order-info-row">
-                <div class="order-info-label">Items Count:</div>
-                <div class="order-info-value">${itemsCount}</div>
-            </div>
-            <div class="order-info-row">
-                <div class="order-info-label">Total Weight:</div>
-                <div class="order-info-value">${Math.round(order.totalWeight || 0)} KG</div>
-            </div>
-        </div>
-    `;
-    
-    trackingContent.innerHTML = trackingHTML;
-}
         
         // Show error
         function showError(message) {
@@ -785,11 +380,11 @@ function renderTracking(order) {
                 const data = await fetchOrderData(orderId);
                 
                 if (data.status !== currentOrder.status) {
-    currentOrder = data;
-    renderTracking(data);
-    renderInvoice(data);  // Add this line to refresh invoice too
-    document.title = `📦 ${data.status} - Order ${orderId}`;
-}
+                    currentOrder = data;
+                    renderTracking(data);
+                    renderInvoice(data);
+                    document.title = `📦 ${data.status} - Order ${orderId}`;
+                }
             } catch (error) {
                 console.log('Update check failed:', error);
             }
