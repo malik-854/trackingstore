@@ -449,41 +449,47 @@
         //  URL
         const API_URL = 'https://script.google.com/macros/s/AKfycbwGEoUZfl7CjfQz-iCibfj1Y-LbVWvoCPDLr5gtJPOZv7qaVzjP66CeGe8zk9QNg8BZRA/exec';
         
-        // Status mapping
-        const STATUS_MAP = {
-            'Order Received': 1,
-            'Payment Received': 2,
-            'Order Dispatched': 3,
-            'Delivered': 4
-        };
-        
-        // Tracking steps
-        const TRACKING_STEPS = [
-            { 
-                icon: 'fas fa-clipboard-check', 
-                title: 'Order Received', 
-                description: 'Order has been received and is being processed',
-                statusKey: 'Order Received'
-            },
-            { 
-                icon: 'fas fa-money-check-alt', 
-                title: 'Payment Verified', 
-                description: 'Payment has been received and verified',
-                statusKey: 'Payment Received'
-            },
-            { 
-                icon: 'fas fa-shipping-fast', 
-                title: 'Order Dispatched', 
-                description: 'Order has been dispatched for delivery',
-                statusKey: 'Order Dispatched'
-            },
-            { 
-                icon: 'fas fa-home', 
-                title: 'Delivered', 
-                description: 'Order has been delivered successfully',
-                statusKey: 'Delivered'
-            }
-        ];
+        // Status mapping - Payment Received activates BOTH step 2 and 3
+const STATUS_MAP = {
+    'Order Received': 1,
+    'Payment Received': 3,  // CHANGED: Jumps directly to step 3
+    'Order Dispatched': 3,
+    'Delivered': 4
+};
+
+// Tracking steps configuration
+const TRACKING_STEPS = [
+    { 
+        icon: 'fas fa-clipboard-check', 
+        title: 'Order Received', 
+        description: 'Order has been received and is being processed',
+        statusKey: 'Order Received'
+    },
+    { 
+        icon: 'fas fa-money-check-alt', 
+        title: 'Payment Verified', 
+        description: 'Payment has been received and verified',
+        statusKey: 'Order Received'  // Will be active when Order Received
+    },
+    { 
+        icon: 'fas fa-cogs', 
+        title: 'Order Processing', 
+        description: 'Order is being processed',
+        statusKey: 'Payment Received'  // Will be active when Payment Received
+    },
+    { 
+        icon: 'fas fa-shipping-fast', 
+        title: 'Order Dispatched', 
+        description: 'Order has been dispatched for delivery',
+        statusKey: 'Order Dispatched'
+    },
+    { 
+        icon: 'fas fa-home', 
+        title: 'Delivered', 
+        description: 'Order has been delivered successfully',
+        statusKey: 'Delivered'
+    }
+];
         
         let currentOrder = null;
         let refreshInterval = null;
@@ -668,74 +674,87 @@
         }
         
         // Render tracking content
-        function renderTracking(order) {
-            const trackingContent = document.getElementById('trackingContent');
-            
-            const currentStatusIndex = STATUS_MAP[order.status] || 1;
-            
-            // Status badge
-            let statusClass = 'status-received';
-            if (order.status === 'Payment Received') statusClass = 'status-paid';
-            else if (order.status === 'Order Dispatched') statusClass = 'status-dispatched';
-            else if (order.status === 'Delivered') statusClass = 'status-delivered';
-            
-            let trackingHTML = `
-                <div class="status-badge ${statusClass}">${order.status}</div>
-                <div class="steps-container">
-            `;
-            
-            // Tracking steps
-            TRACKING_STEPS.forEach((step, index) => {
-                const stepNumber = index + 1;
-                let stepClass = 'inactive';
-                
-                if (stepNumber < currentStatusIndex) {
-                    stepClass = 'completed';
-                } else if (stepNumber === currentStatusIndex) {
-                    stepClass = 'active';
-                }
-                
-                trackingHTML += `
-                    <div class="step ${stepClass}">
-                        <div class="step-icon">
-                            <i class="${step.icon}"></i>
-                        </div>
-                        <div class="step-content">
-                            <div class="step-title">${step.title}</div>
-                            <div class="step-desc">${step.description}</div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            trackingHTML += `</div>`;
-            
-            // Order info
-            const itemsCount = order.orderItems ? order.orderItems.reduce((sum, item) => sum + item.qty, 0) : 0;
-            
-            trackingHTML += `
-                <div class="order-info">
-                    <div class="order-info-row">
-                        <div class="order-info-label">Order Date:</div>
-                        <div class="order-info-value">${formatDate(order.timestamp)}</div>
-                    </div>
-                    <div class="order-info-row">
-                        <div class="order-info-label">Last Updated:</div>
-                        <div class="order-info-value">${formatDate(order.lastUpdated || order.timestamp)}</div>
-                    </div>
-                    <div class="order-info-row">
-                        <div class="order-info-label">Items Count:</div>
-                        <div class="order-info-value">${itemsCount}</div>
-                    </div>
-                    <div class="order-info-row">
-                        <div class="order-info-label">Total Weight:</div>
-                        <div class="order-info-value">${Math.round(order.totalWeight || 0)} KG</div>
-                    </div>
-                </div>
-            `;
-            
-            trackingContent.innerHTML = trackingHTML;
+       // Render tracking content
+function renderTracking(order) {
+    const trackingContent = document.getElementById('trackingContent');
+    
+    // Status badge
+    let statusClass = 'status-received';
+    if (order.status === 'Payment Received') statusClass = 'status-paid';
+    else if (order.status === 'Order Dispatched') statusClass = 'status-dispatched';
+    else if (order.status === 'Delivered') statusClass = 'status-delivered';
+    
+    let trackingHTML = `
+        <div class="status-badge ${statusClass}">${order.status}</div>
+        <div class="steps-container">
+    `;
+    
+    // Tracking steps with special logic for Payment Received
+    TRACKING_STEPS.forEach((step, index) => {
+        const stepNumber = index + 1;
+        let stepClass = 'inactive';
+        
+        // Special logic for Payment Received
+        if (order.status === 'Payment Received') {
+            // Show steps 1, 2, 3 as completed/active
+            if (stepNumber <= 3) {
+                stepClass = 'completed';
+            }
+            if (stepNumber === 3) {
+                stepClass = 'active';
+            }
         }
+        // Normal logic for other statuses
+        else {
+            const currentStatusIndex = STATUS_MAP[order.status] || 1;
+            if (stepNumber < currentStatusIndex) {
+                stepClass = 'completed';
+            } else if (stepNumber === currentStatusIndex) {
+                stepClass = 'active';
+            }
+        }
+        
+        trackingHTML += `
+            <div class="step ${stepClass}">
+                <div class="step-icon">
+                    <i class="${step.icon}"></i>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">${step.title}</div>
+                    <div class="step-desc">${step.description}</div>
+                </div>
+            </div>
+        `;
+    });
+    
+    trackingHTML += `</div>`;
+    
+    // Order info
+    const itemsCount = order.orderItems ? order.orderItems.reduce((sum, item) => sum + item.qty, 0) : 0;
+    
+    trackingHTML += `
+        <div class="order-info">
+            <div class="order-info-row">
+                <div class="order-info-label">Order Date:</div>
+                <div class="order-info-value">${formatDate(order.timestamp)}</div>
+            </div>
+            <div class="order-info-row">
+                <div class="order-info-label">Last Updated:</div>
+                <div class="order-info-value">${formatDate(order.lastUpdated || order.timestamp)}</div>
+            </div>
+            <div class="order-info-row">
+                <div class="order-info-label">Items Count:</div>
+                <div class="order-info-value">${itemsCount}</div>
+            </div>
+            <div class="order-info-row">
+                <div class="order-info-label">Total Weight:</div>
+                <div class="order-info-value">${Math.round(order.totalWeight || 0)} KG</div>
+            </div>
+        </div>
+    `;
+    
+    trackingContent.innerHTML = trackingHTML;
+}
         
         // Show error
         function showError(message) {
@@ -766,10 +785,11 @@
                 const data = await fetchOrderData(orderId);
                 
                 if (data.status !== currentOrder.status) {
-                    currentOrder = data;
-                    renderTracking(data);
-                    document.title = `📦 ${data.status} - Order ${orderId}`;
-                }
+    currentOrder = data;
+    renderTracking(data);
+    renderInvoice(data);  // Add this line to refresh invoice too
+    document.title = `📦 ${data.status} - Order ${orderId}`;
+}
             } catch (error) {
                 console.log('Update check failed:', error);
             }
