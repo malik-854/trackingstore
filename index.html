@@ -2922,8 +2922,24 @@ function renderCart(){
     document.getElementById("cart-total").innerText = `Total: Rs ${total} (${Math.round(totalWeight)} KG)`
 }
 
-/// Updated placeOrder() function with link generation and email copy
+let isOrderBeingPlaced = false; // ADD THIS LINE AT TOP
+
 async function placeOrder(){
+    // PREVENT DOUBLE CLICKING
+    if (isOrderBeingPlaced) {
+        return; // Already placing order, ignore click
+    }
+    
+    isOrderBeingPlaced = true; // Lock the button
+    
+    // DISABLE THE BUTTON IMMEDIATELY
+    const whatsappBtn = document.querySelector('.whatsapp-btn');
+    const originalHTML = whatsappBtn.innerHTML;
+    whatsappBtn.innerHTML = '<span class="whatsapp-icon">⏳</span> SAVING...';
+    whatsappBtn.style.pointerEvents = 'none';
+    whatsappBtn.style.opacity = '0.7';
+    whatsappBtn.style.cursor = 'not-allowed';
+	
     // Generate unique Order ID
     const timestamp = Date.now();
     const random = Math.random().toString(36).substr(2, 6).toUpperCase();
