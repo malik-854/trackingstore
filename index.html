@@ -2926,6 +2926,9 @@ let isOrderBeingPlaced = false; // ADD THIS LINE AT TOP
 
 // Updated placeOrder() function with link generation and email copy
 async function placeOrder(){
+	// ⬇️ ADD THESE 2 LINES AT THE START ⬇️
+    const btn = document.querySelector('.whatsapp-btn');
+    if (btn.disabled) return; else btn.innerHTML = '<span class="whatsapp-icon">⏳</span> Saving...', btn.disabled = true;
     // Generate unique Order ID
     const timestamp = Date.now();
     const random = Math.random().toString(36).substr(2, 6).toUpperCase();
