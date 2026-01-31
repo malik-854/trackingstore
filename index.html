@@ -3074,7 +3074,7 @@ async function placeOrder(){
         orderSummary += `📍 Address: ${address}\n`;
         orderSummary += `💰 Delivery Charges (${shipping === "open" ? "Open" : "Bundle"}): Rs ${formatNumber(deliveryCharges)}\n`;
     }
-    orderSummary += `\n*Order Items (${Object.keys(cart).length} types):*\n";
+    orderSummary += `\n*Order Items (${Object.keys(cart).length} types):*\n`;
 
     // ORDER ITEMS WITH FORMATTED PRICES
     Object.values(cart).forEach((i, index) => {
@@ -3225,7 +3225,6 @@ async function saveOrderToGoogleSheets(orderData) {
         return { success: false, error: error.message };
     }
 }
-	}
 // Helper function to reset button state
 function resetButton(button, originalHTML) {
     button.innerHTML = originalHTML;
