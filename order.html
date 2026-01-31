@@ -1,4 +1,4 @@
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -245,7 +245,6 @@
         
         .status-received { background: #3498db; }
         .status-paid { background: #9b59b6; }
-        .status-dispatched { background: #e67e22; }
         .status-delivered { background: #2ecc71; }
         
         .steps-container {
@@ -446,18 +445,17 @@
     </div>
 
     <script>
-        //  URL
-        const API_URL = 'https://script.google.com/macros/s/AKfycbwGEoUZfl7CjfQz-iCibfj1Y-LbVWvoCPDLr5gtJPOZv7qaVzjP66CeGe8zk9QNg8BZRA/exec';
+        // API URL
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwiMjGO1P5x2xbmCr_7ZjjLTNfVy8HCTyGvqxzVMvVsTcbeYdzapFeCFoDKRHFDNn6eag/exec';
         
-        // Status mapping - ONLY 4 STAGES
+        // Status mapping - 3 STAGES ONLY (matching Google Sheet)
         const STATUS_MAP = {
-            'Order Received': 1,
-            'Payment Received': 3,  // This activates both stage 2 AND 3
-            'Order Dispatched': 4,
-            'Delivered': 5
+            'ORDER_RECEIVED': 1,        // Stage 1: Order Received
+            'PAYMENT_RECEIVED': 2,      // Stage 2: Payment Verified
+            'DELIVERED': 3              // Stage 3: Order Dispatched & Delivered
         };
 
-        // ONLY 4 TRACKING STEPS - stage 2 and 3 both controlled by Payment Received
+        // ONLY 3 TRACKING STEPS (matching your Google Sheet statuses)
         const TRACKING_STEPS = [
             { 
                 icon: 'fas fa-clipboard-check', 
@@ -470,16 +468,11 @@
                 description: 'Payment has been received and verified'
             },
             { 
-                icon: 'fas fa-cogs', 
-                title: 'Order Processing', 
-                description: 'Order is being processed'
-            },
-            { 
                 icon: 'fas fa-shipping-fast', 
                 title: 'Order Dispatched', 
                 description: 'Order has been dispatched for delivery'
             }
-            // Note: Delivered status will be shown as completed stage 4
+            // "DELIVERED" will show as completed stage 3
         ];
         
         let currentOrder = null;
@@ -664,15 +657,14 @@
             document.getElementById('orderId').textContent = order.orderId;
         }
         
-        // Render tracking content - SIMPLIFIED FOR 4 STAGES
+        // Render tracking content - SIMPLIFIED FOR 3 STAGES
         function renderTracking(order) {
             const trackingContent = document.getElementById('trackingContent');
             
             // Status badge
             let statusClass = 'status-received';
-            if (order.status === 'Payment Received') statusClass = 'status-paid';
-            else if (order.status === 'Order Dispatched') statusClass = 'status-dispatched';
-            else if (order.status === 'Delivered') statusClass = 'status-delivered';
+            if (order.status === 'PAYMENT_RECEIVED') statusClass = 'status-paid';
+            else if (order.status === 'DELIVERED') statusClass = 'status-delivered';
             
             let trackingHTML = `
                 <div class="status-badge ${statusClass}">${order.status}</div>
@@ -682,7 +674,7 @@
             // Get current status index
             const currentStatusIndex = STATUS_MAP[order.status] || 1;
             
-            // Render 4 tracking steps
+            // Render 3 tracking steps
             TRACKING_STEPS.forEach((step, index) => {
                 const stepNumber = index + 1;
                 let stepClass = 'inactive';
@@ -693,8 +685,8 @@
                     stepClass = 'active';
                 }
                 
-                // Special case for "Delivered" - all 4 steps completed
-                if (order.status === 'Delivered' && stepNumber <= 4) {
+                // Special case for "Delivered" - all 3 steps completed
+                if (order.status === 'DELIVERED' && stepNumber <= 3) {
                     stepClass = 'completed';
                 }
                 
@@ -710,21 +702,6 @@
                     </div>
                 `;
             });
-            
-            // Add a 5th step for "Delivered" status if needed
-            if (order.status === 'Delivered') {
-                trackingHTML += `
-                    <div class="step completed">
-                        <div class="step-icon">
-                            <i class="fas fa-home"></i>
-                        </div>
-                        <div class="step-content">
-                            <div class="step-title">Delivered</div>
-                            <div class="step-desc">Order has been delivered successfully</div>
-                        </div>
-                    </div>
-                `;
-            }
             
             trackingHTML += `</div>`;
             
