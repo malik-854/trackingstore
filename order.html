@@ -451,7 +451,7 @@
         // Status mapping - 3 STAGES ONLY (matching Google Sheet)
         const STATUS_MAP = {
             'ORDER_RECEIVED': 1,        // Stage 1: Order Received
-            'PAYMENT_RECEIVED': 2,      // Stage 2: Payment Verified
+            'Payment Received': 2,      // Stage 2: Payment Verified
             'DELIVERED': 3              // Stage 3: Order Dispatched & Delivered
         };
 
@@ -663,7 +663,7 @@
             
             // Status badge
             let statusClass = 'status-received';
-            if (order.status === 'PAYMENT_RECEIVED') statusClass = 'status-paid';
+            if (order.status === 'Payment Received') statusClass = 'status-paid';
             else if (order.status === 'DELIVERED') statusClass = 'status-delivered';
             
             let trackingHTML = `
