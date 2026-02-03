@@ -3389,26 +3389,26 @@ function updatePaymentButtons() {
 
 document.head.appendChild(style)
 
+// ========== PWA SERVICE WORKER ==========
 // Register service worker for PWA
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('sw.js')
-        .then(function(registration) {
-          console.log('ServiceWorker registration successful');
-        })
-        .catch(function(err) {
-          console.log('ServiceWorker registration failed: ', err);
-        });
-    });
-  }
-
-  // Show "Add to Home Screen" prompt
-  window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent Chrome 67 and earlier from automatically showing the prompt
-    e.preventDefault();
-    // You can show your own install button here if needed
-    console.log('PWA installation available');
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js')
+      .then(function(registration) {
+        console.log('ServiceWorker registration successful');
+      })
+      .catch(function(err) {
+        console.log('ServiceWorker registration failed: ', err);
+      });
   });
+}
+
+// Show "Add to Home Screen" prompt
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  console.log('✅ PWA installation available');
+});
+// ========== END PWA CODE ==========
 
 </script>
 </body>
