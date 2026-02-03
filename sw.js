@@ -1,9 +1,9 @@
 // Service Worker for Hayyat Paper Store PWA
 const CACHE_NAME = 'hayyat-paper-v1.0';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
+  './',  // or 'index.html'
+  'index.html',
+  'manifest.json',
   '/android-chrome-192x192.png',
   '/apple-touch-icon.png'
 ];
