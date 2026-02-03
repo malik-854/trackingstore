@@ -2,19 +2,19 @@
   "name": "Hayyat Paper Store",
   "short_name": "Hayyat Paper",
   "description": "Your Partner in Premium Paper Solutions",
-  "start_url": "/trackingstore/",  // ← ADD YOUR REPO NAME
+  "start_url": "/trackingstore/",  
   "display": "standalone",
   "background_color": "#004c99",
   "theme_color": "#004c99",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "web-app-manifest-192x192.png", // Changed path
+      "src": "web-app-manifest-192x192.png", 
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "web-app-manifest-512x512.png", // Changed path
+      "src": "web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
