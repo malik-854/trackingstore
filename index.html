@@ -6,13 +6,13 @@
 <title>Hayyat Paper Store</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <!-- PWA Manifest -->
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="./manifest.json">
 
 <!-- Theme Color for Mobile -->
 <meta name="theme-color" content="#004c99">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-H2V1WJFV61"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -3395,7 +3395,7 @@ document.head.appendChild(style)
 // Register service worker for PWA
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/sw.js')
+      navigator.serviceWorker.register('sw.js')
         .then(function(registration) {
           console.log('ServiceWorker registration successful');
         })
