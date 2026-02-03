@@ -5,14 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hayyat Paper Store</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<!-- PWA Manifest -->
-<link rel="manifest" href="manifest.json">
-
-<!-- Theme Color for Mobile -->
-<meta name="theme-color" content="#004c99">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-H2V1WJFV61"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -2139,7 +2131,10 @@ function searchProducts(query){
     }
 }
 
-
+// After rendering products
+setTimeout(() => {
+    initializeAllProducts()
+}, 100)
 
 // Helper function for color button styling
 function getColorStyle(colorName) {
@@ -3388,136 +3383,6 @@ function updatePaymentButtons() {
 }
 
 document.head.appendChild(style)
-
-// ========== PWA SERVICE WORKER ==========
-// Register service worker for PWA
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js')
-      .then(function(registration) {
-        console.log('ServiceWorker registration successful');
-      })
-      .catch(function(err) {
-        console.log('ServiceWorker registration failed: ', err);
-      });
-  });
-}
-
-// Show "Add to Home Screen" prompt
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  console.log('✅ PWA installation available');
-});
-// ========== END PWA CODE ==========
-
-// PWA Debug Script
-console.log('=== PWA DEBUG INFO ===');
-
-// 1. Check manifest
-const manifestLink = document.querySelector('link[rel="manifest"]');
-if (manifestLink) {
-  console.log('✅ Manifest link found:', manifestLink.href);
-  fetch(manifestLink.href)
-    .then(r => r.json())
-    .then(manifest => {
-      console.log('✅ Manifest loaded:', manifest.name);
-      console.log('Start URL:', manifest.start_url);
-      console.log('Display mode:', manifest.display);
-    })
-    .catch(e => console.error('❌ Manifest error:', e));
-} else {
-  console.error('❌ No manifest link found');
-}
-
-// 2. Check service worker
-if ('serviceWorker' in navigator) {
-  console.log('✅ Service Worker API supported');
-  navigator.serviceWorker.getRegistration()
-    .then(reg => {
-      if (reg) {
-        console.log('✅ Service Worker registered:', reg.scope);
-      } else {
-        console.error('❌ No Service Worker registration found');
-      }
-    });
-} else {
-  console.error('❌ Service Worker not supported');
-}
-
-// 3. Check PWA install criteria
-window.addEventListener('beforeinstallprompt', (e) => {
-  console.log('🎉 BEFOREINSTALLPROMPT EVENT FIRED!');
-  console.log('✅ PWA is installable!');
-  
-  // Store the event for later
-  window.deferredPrompt = e;
-  
-  // Show manual install button
-  showInstallButton();
-});
-
-// 4. Manual install button
-function showInstallButton() {
-  const installBtn = document.createElement('button');
-  installBtn.id = 'pwa-install-btn';
-  installBtn.innerHTML = '📱 Install Hayyat App';
-  installBtn.style.cssText = `
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: linear-gradient(135deg, #004c99, #28a745);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 50px;
-    border: none;
-    cursor: pointer;
-    z-index: 10000;
-    font-weight: bold;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    font-family: 'Roboto', sans-serif;
-  `;
-  
-  installBtn.onclick = () => {
-    if (window.deferredPrompt) {
-      window.deferredPrompt.prompt();
-      
-      window.deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('🎉 User installed the PWA');
-        } else {
-          console.log('❌ User dismissed the install prompt');
-        }
-        window.deferredPrompt = null;
-        installBtn.remove();
-      });
-    }
-  };
-  
-  // Only add if not already there
-  if (!document.getElementById('pwa-install-btn')) {
-    document.body.appendChild(installBtn);
-    
-    // Auto-hide after 30 seconds
-    setTimeout(() => {
-      if (installBtn.parentElement) {
-        installBtn.style.opacity = '0.7';
-      }
-    }, 30000);
-  }
-}
-
-// 5. Check if already installed
-window.addEventListener('appinstalled', () => {
-  console.log('🎉 PWA was successfully installed!');
-  
-  // Remove install button if it exists
-  const installBtn = document.getElementById('pwa-install-btn');
-  if (installBtn) installBtn.remove();
-});
-
-// 6. Log readiness
-console.log('=== PWA DEBUG READY ===');
-	
 </script>
 </body>
 </html>
