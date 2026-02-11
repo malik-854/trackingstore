@@ -1896,6 +1896,13 @@ fetchAnnouncements();  // Load announcements
         document.getElementById('product-list').style.display = 'grid';
         document.getElementById('view-cart-btn').style.display = 'flex';
     }
+	// --- REFRESH LOGIC START ---
+  console.log("Refresh timer started for 60 seconds...");
+  setTimeout(function() {
+      console.log("Refreshing now!");
+      location.reload();
+  }, 60000); 
+  // --- REFRESH LOGIC END ---
 }
 
 async function fetchAnnouncements() {
