@@ -1737,7 +1737,7 @@ function setupPaymentListeners() {
     // Click on labels
     if (shopBtn) {
         shopBtn.addEventListener('click', function() {
-			window.lastUserActivity = Date.now();
+			
             shopRadio.checked = true;
             updatePaymentButtons();
         });
@@ -1745,7 +1745,7 @@ function setupPaymentListeners() {
     
     if (bankBtn) {
         bankBtn.addEventListener('click', function() {
-			window.lastUserActivity = Date.now();
+			
             bankRadio.checked = true;
             updatePaymentButtons();
         });
@@ -1754,14 +1754,14 @@ function setupPaymentListeners() {
     // Also listen to radio button changes directly
     if (shopRadio) {
     shopRadio.addEventListener('change', function() {
-        window.lastUserActivity = Date.now(); // ADD THIS LINE
+         // ADD THIS LINE
         updatePaymentButtons();
     });
 }
 
 if (bankRadio) {
     bankRadio.addEventListener('change', function() {
-        window.lastUserActivity = Date.now(); // ADD THIS LINE
+         // ADD THIS LINE
         updatePaymentButtons();
     });
 }
@@ -1772,7 +1772,7 @@ if (bankRadio) {
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', function() {
-	window.lastUserActivity = Date.now(); // ADD THIS LINE
+	 // ADD THIS LINE
     fetchProducts();
     setupShippingListeners();
 setupPaymentListeners();
@@ -1780,7 +1780,7 @@ setupPaymentListeners();
     // Close cart when clicking outside on mobile AND track activity
 document.addEventListener('click', function(event) {
     // Update activity timestamp
-    window.lastUserActivity = Date.now();
+    
     
     // Cart closing logic
     const cartContainer = document.getElementById('cart-container');
@@ -1832,7 +1832,7 @@ function setupShippingListeners() {
     
     if (selfLabel) {
         selfLabel.addEventListener('click', function() {
-			window.lastUserActivity = Date.now();
+			
             document.getElementById('shipping-self').checked = true;
             updateShipping('self');
         });
@@ -1840,7 +1840,7 @@ function setupShippingListeners() {
     
     if (openLabel) {
         openLabel.addEventListener('click', function() {
-			window.lastUserActivity = Date.now();
+			
             document.getElementById('shipping-delivery-open').checked = true;
             updateShipping('open');
         });
@@ -1848,7 +1848,7 @@ function setupShippingListeners() {
     
     if (bundleLabel) {
         bundleLabel.addEventListener('click', function() {
-			window.lastUserActivity = Date.now();
+			
             document.getElementById('shipping-delivery-bundle').checked = true;
             updateShipping('bundle');
         });
@@ -3402,7 +3402,6 @@ function updatePaymentButtons() {
 document.head.appendChild(style)
 	// ===== SIMPLE AUTO-REFRESH =====
 // Global variable accessible everywhere
-window.lastUserActivity = Date.now();
 
 // Track ALL activity
 function updateActivity() {
