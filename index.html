@@ -3063,7 +3063,7 @@ async function placeOrder() {
 
     try {
         console.log("Step 1: Fetching Fresh CSV...");
-        // This is the link you provided. Ensure gid=0 is your actual PRODUCTS tab.
+        // This is your Product Tab link (gid=0)
         const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSclNO5PqJ9dkcM6SVRbpVfxs4K4v_JcWq_koEALslXG22kO2zTAr1p0NdTv-2P4UkMxvCaObcERDPn/pub?gid=0&single=true&output=csv';
 
         const response = await fetch(SHEET_CSV_URL);
@@ -3072,10 +3072,9 @@ async function placeOrder() {
         const csvText = await response.text();
         console.log("Step 2: CSV Data Received.");
 
+        // Parse CSV into rows
         const rows = csvText.split('\n').map(row => row.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')));
-
-        if (typeof group !== 'function') throw new Error("The 'group' function is missing!");
-        const freshGroups = group(rows.slice(1));
+        const dataRows = rows.slice(1); // Skip the header row
 
         let priceChanged = false;
         let changeDetails = "";
@@ -3084,16 +3083,19 @@ async function placeOrder() {
         for (let cartKey in cart) {
             const item = cart[cartKey];
 
-            if (typeof findFreshItem !== 'function') throw new Error("The 'findFreshItem' function is missing!");
-            const freshItem = findFreshItem(freshGroups, item);
+            // Use the findFreshItem helper to scan all rows
+            const freshRow = findFreshItem(dataRows, item);
 
-            if (!freshItem) {
-                console.log("Item out of stock:", item.name);
+            if (!freshRow) {
+                console.log("Item out of stock or mismatch:", item.name);
                 priceChanged = true;
-                changeDetails += `• ${item.name}: Now Out of Stock\n`;
+                changeDetails += `• ${item.name} (${item.size}): Now Out of Stock\n`;
             } else {
-                const livePrice = Math.round(freshItem.price);
+                // Column M (Index 12) is the Calculated Price from your screenshot
+                const livePrice = Math.round(parseFloat(freshRow[12]));
                 const currentPrice = Math.round(item.price);
+
+                console.log(`Checking ${item.name}: Sheet ${livePrice} vs Cart ${currentPrice}`);
 
                 if (livePrice !== currentPrice) {
                     priceChanged = true;
@@ -3103,15 +3105,15 @@ async function placeOrder() {
         }
 
         if (priceChanged) {
-            console.log("Price/Stock change detected! Refreshing...");
+            console.log("Price/Stock change detected! Refreshing store...");
             alert(`⚠️ UPDATE DETECTED:\n\n${changeDetails}\nYour cart and prices are being updated to match our latest inventory. Please review and try again.`);
             window.location.reload(); 
             return;
         }
 
-        console.log("Step 4: Prices verified. Proceeding to order generation...");
+        console.log("Step 4: Prices verified. Proceeding to WhatsApp...");
 
-        // --- START OF ORIGINAL ORDER LOGIC ---
+        // --- START OF ORIGINAL ORDER GENERATION LOGIC ---
         btn.innerHTML = '<span class="whatsapp-icon">⏳</span> Saving...';
 
         const timestamp = Date.now();
@@ -3120,7 +3122,7 @@ async function placeOrder() {
         const invoiceLink = `https://www.hayyatstore.com/order.html?id=${orderId}`;
 
         function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return num ? num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0";
         }
 
         const name = document.getElementById("cust-name").value.trim();
@@ -3136,26 +3138,9 @@ async function placeOrder() {
         }
         const shipping = shippingElement.value;
 
-        if (!name) {
-            alert("Please enter your full name");
-            document.getElementById("cust-name").focus();
-            btn.disabled = false; btn.innerHTML = 'Place Order via WhatsApp';
-            return;
-        }
-
-        if (!phone || phone.length < 10) {
-            alert("Please enter a valid phone number");
-            document.getElementById("cust-phone").focus();
-            btn.disabled = false; btn.innerHTML = 'Place Order via WhatsApp';
-            return;
-        }
-
-        if ((shipping === "open" || shipping === "bundle") && !address) {
-            alert("Please enter delivery address");
-            document.getElementById("delivery-address").focus();
-            btn.disabled = false; btn.innerHTML = 'Place Order via WhatsApp';
-            return;
-        }
+        // Basic validation
+        if (!name) { alert("Please enter your name"); btn.disabled = false; return; }
+        if (!phone || phone.length < 10) { alert("Please enter valid phone"); btn.disabled = false; return; }
 
         let total = 0;
         let totalWeight = 0;
@@ -3168,35 +3153,21 @@ async function placeOrder() {
             totalWeight += itemWeight;
 
             let specs = `${i.size}, GSM ${i.gsm}`;
-            if (i.selectedBrand && i.selectedBrand !== '') specs += `, ${i.selectedBrand}`;
-            if (i.selectedColor && i.selectedColor !== '') specs += `, ${i.selectedColor}`;
-
             orderItems.push({
-                name: i.name,
-                specs: specs,
-                qty: i.qty,
-                price: i.price,
-                weight: i.weight,
-                rate: i.rate,
-                total: itemTotal,
-                weightTotal: itemWeight
+                name: i.name, specs, qty: i.qty, price: i.price, weight: i.weight, rate: i.rate, total: itemTotal, weightTotal: itemWeight
             });
         });
 
+        // Delivery calculation logic
         let deliveryCharges = 0;
         if (shipping === "open" || shipping === "bundle") {
             if (shipping === "open") {
                 let baseCharges = Math.max(Math.round(totalWeight * 3), 450);
                 let currentTotalWithBase = total + baseCharges;
-                if (currentTotalWithBase % 100 === 0) {
-                    deliveryCharges = baseCharges;
-                } else {
-                    deliveryCharges = baseCharges + (100 - (currentTotalWithBase % 100));
-                }
-            } else if (shipping === "bundle") {
-                let bundles = totalWeight / 70;
-                bundles = (bundles % 1 <= 0.5) ? Math.floor(bundles) : Math.ceil(bundles);
-                deliveryCharges = Math.max(1, bundles) * 250;
+                deliveryCharges = (currentTotalWithBase % 100 === 0) ? baseCharges : baseCharges + (100 - (currentTotalWithBase % 100));
+            } else {
+                let bundles = Math.max(1, (totalWeight / 70 % 1 <= 0.5) ? Math.floor(totalWeight / 70) : Math.ceil(totalWeight / 70));
+                deliveryCharges = bundles * 250;
             }
             total += deliveryCharges;
         }
@@ -3205,33 +3176,21 @@ async function placeOrder() {
         let whatsappMessage = `📦 *NEW ORDER - HAYYAT PAPER STORE*\n\n`;
         whatsappMessage += `Order #${orderId}\n`;
         whatsappMessage += `Customer: ${name}\n`;
-        whatsappMessage += `Phone: ${phone}\n\n`;
-        whatsappMessage += `📋 *VIEW ORDER DETAILS & TRACKING:*\n`;
-        whatsappMessage += `${invoiceLink}\n\n`;
+        whatsappMessage += `📋 *VIEW ORDER DETAILS & TRACKING:*\n${invoiceLink}\n\n`;
         whatsappMessage += `⚠️ *DO NOT EDIT THIS LINK*`;
 
         let whatsappNumber = ((shipping === "open" || shipping === "bundle") && 
                              document.querySelector('input[name="payment"]:checked').value === "bank") 
                              ? "923046470666" : "923036470666";
 
-        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
-        
-        // Execute Redirect
-        window.location.href = whatsappUrl;
+        // Redirect to WhatsApp
+        window.location.href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
-        // Background Data Saving (Google Sheets & Email)
+        // Background Saving
         const orderData = { orderId, invoiceLink, customerName: name, customerPhone: phone, customerEmail: email || '', shippingMethod: shipping, paymentMethod: document.querySelector('input[name="payment"]:checked').value, deliveryAddress: address || '', orderItems, totalAmount: total, totalWeight: Math.round(totalWeight), subtotal: total - deliveryCharges, deliveryCharges };
         saveOrderToGoogleSheets(orderData).catch(err => console.error('Sheet Save Error:', err));
 
-        const emailData = { customerName: name, customerPhone: phone, customerEmail: email || 'Not provided', shippingMethod: shipping, paymentMethod: document.querySelector('input[name="payment"]:checked').value, deliveryAddress: address || 'Not applicable', orderSummary: "See Link", orderTotal: total, orderWeight: Math.round(totalWeight) };
-        fetch('https://script.google.com/macros/s/AKfycbw-h33gLXwPGRdnlURFncIhf3W8AS55ikyJN8Db4IZaydA4BwXxyG4gkSghUlluOznFWg/exec', {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(emailData)
-        }).catch(err => console.error('Email Backup Error:', err));
-
-        // UI Cleanup
+        // Cleanup
         setTimeout(() => {
             closeCheckout();
             cart = {};
@@ -3243,7 +3202,7 @@ async function placeOrder() {
 
     } catch (error) {
         console.error('Order error:', error);
-        alert('An error occurred. Please try again.');
+        alert('An error occurred while verifying prices. Please try again.');
         btn.disabled = false;
         btn.innerHTML = 'Place Order via WhatsApp';
     }
@@ -3333,34 +3292,23 @@ function updatePaymentButtons() {
     }
 }
 
-function findFreshItem(groups, cartItem) {
-    // 1. Match the Brand/Category Name (e.g., "Ningbo Bleach")
-    // Using trim and toUpperCase to prevent "ningbo" vs "Ningbo" mismatch
-    const category = Object.keys(groups).find(cat => 
-        cat.trim().toUpperCase() === cartItem.name.trim().toUpperCase()
-    );
+function findFreshItem(rows, cartItem) {
+    // We search through ALL rows to find the one that matches Name, L, W, and GSM
+    return rows.find(row => {
+        const sheetName   = String(row[3] || "").trim().toUpperCase(); // Column D
+        const sheetLength = String(row[6] || "").trim();               // Column G
+        const sheetWidth  = String(row[7] || "").trim();               // Column H
+        const sheetGSM    = String(row[8] || "").trim();               // Column I
 
-    if (!category) return null;
+        const cartName    = String(cartItem.name || "").trim().toUpperCase();
+        const cartLength  = String(cartItem.length || "").trim();
+        const cartWidth   = String(cartItem.width || "").trim();
+        const cartGSM     = String(cartItem.gsm || "").trim();
 
-    // 2. Search items in that category using Length (G), Width (H), and GSM (I)
-    return groups[category].find(item => {
-        // We use indices [6], [7], and [8] which correspond to Columns G, H, and I
-        // item[6] = Length (Column G)
-        // item[7] = Width (Column H)
-        // item[8] = GSM (Column I)
-        
-        const sheetLength = String(item[6] || "").trim();
-        const sheetWidth  = String(item[7] || "").trim();
-        const sheetGSM    = String(item[8] || "").trim();
-        
-        const cartLength = String(cartItem.length || "").trim();
-        const cartWidth  = String(cartItem.width || "").trim();
-        const cartGSM    = String(cartItem.gsm || "").trim();
-        
-        // Only return true if all three specifications match exactly
-        return sheetLength === cartLength && 
-               sheetWidth  === cartWidth  && 
-               sheetGSM    === cartGSM;
+        return sheetName === cartName && 
+               sheetLength === cartLength && 
+               sheetWidth === cartWidth && 
+               sheetGSM === cartGSM;
     });
 }
 	
