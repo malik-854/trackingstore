@@ -1878,8 +1878,7 @@ async function fetchProducts(){
     // ADD THIS LINE:
     fetchAnnouncements();  // Load announcements
     
-    // START periodic price refresh
-    startPriceRefresh();
+    
         
     } catch (error) {
         console.error('Error fetching products:', error);
@@ -3462,7 +3461,8 @@ function startPriceRefresh() {
 window.addEventListener('beforeunload', function() {
     if (priceCheckInterval) clearInterval(priceCheckInterval);
 });
-
+// START periodic price refresh
+    startPriceRefresh();
 document.head.appendChild(style)
 </script>
 </body>
