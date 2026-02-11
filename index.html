@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hayyat Paper Store</title>
 <link rel="icon" type="image/png" href="favicon.png">
+<link rel="icon" type="image/png" href="favicon.png">
+<!-- ADD THIS FALLBACK LINE -->
+<link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA/4QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-H2V1WJFV61"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -15,12 +18,15 @@
 </script>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "5e33c1f3-d93e-4ed4-9e14-71337dc91bba",
+  // Only initialize OneSignal on the actual domain, not on GitHub Pages
+  if (window.location.hostname === 'hayyatstore.com') {
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "5e33c1f3-d93e-4ed4-9e14-71337dc91bba",
+      });
     });
-  });
+  }
 </script>
 
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
@@ -2131,10 +2137,10 @@ function searchProducts(query){
     }
 }
 
-// After rendering products
-setTimeout(() => {
-    initializeAllProducts()
-}, 100)
+// After rendering products - Remove or comment out this entire block
+// setTimeout(() => {
+//     initializeAllProducts()
+// }, 100)
 
 // Helper function for color button styling
 function getColorStyle(colorName) {
