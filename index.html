@@ -2925,10 +2925,14 @@ async function addToCart(key){
                 
                 if (freshPrice > 0 && currentPrice > 0 && freshPrice !== currentPrice) {
     alert(`⚠️ PRICE UPDATED / قیمت تبدیل ہو گئی ہے!\n\n` +
-          `This product is now Rs ${freshPrice}/KG\n` +
-          `اس پروڈکٹ کی نئی قیمت ${freshPrice} روپے فی کلو ہے۔\n\n` +
+          `This product is now Rs ${freshPrice}\n` +
+          `اس پروڈکٹ کی نئی قیمت ${freshPrice} روپے ہے۔\n\n` +
           `Please refresh the page to see current prices.\n` +
           `تازہ ترین قیمتیں دیکھنے کے لیے پیج کو ریفریش کریں۔`);
+    
+    window.location.reload(); 
+    return;
+}
     
     window.location.reload(); // Refreshing automatically is better for the user
     return;
