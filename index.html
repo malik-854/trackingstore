@@ -3109,12 +3109,19 @@ async function placeOrder(){
 
         if (priceChanged) {
             console.log("Price change detected! Stopping order.");
-            alert(`⚠️ PRICE UPDATE:\n\n${changeDetails}\nPrices have changed. Your cart has been updated. Please click "Place Order" again.`);
-            renderCart();
-            updateCartBadge();
+            
+            // ⬇️ UPDATE THIS BLOCK ⬇️
+            alert(`⚠️ PRICE & STOCK UPDATE:\n\n${changeDetails}\nYour cart has been updated with live data. Please review and click "Place Order" again.`);
+            
+            renderCart(); 
+            updateCartBadge(); 
+            
+            // This closes the checkout popup so the user can see their updated cart
+            if (typeof closeCheckout === 'function') closeCheckout(); 
+
             btn.disabled = false;
             btn.innerHTML = 'Place Order via WhatsApp';
-            return; 
+            return; // This stops the code so the WhatsApp message isn't sent
         }
 
         console.log("Step 4: All prices match. Proceeding to original logic...");
@@ -3434,17 +3441,24 @@ function updatePaymentButtons() {
     }
 }
 
-function findFreshItem(freshGroups, cartItem) {
-    const cat = cartItem.category;
-    if (!freshGroups[cat]) return null;
-    return freshGroups[cat].items.find(i => 
-        i.name === cartItem.name && 
-        i.size === cartItem.size && 
-        i.gsm === cartItem.gsm &&
-        (i.displaySize || '') === (cartItem.selectedBrand || '') &&
-        (i.color || '') === (cartItem.selectedColor || '')
+function findFreshItem(groups, cartItem) {
+    // 1. Find the correct category (e.g., NINGO)
+    // We use toUpperCase and trim to avoid "Ningo" vs "ningo" errors
+    const category = Object.keys(groups).find(cat => 
+        cat.trim().toUpperCase() === cartItem.name.trim().toUpperCase()
     );
-}	
+
+    if (!category) return null;
+
+    // 2. Look through the items in that category
+    return groups[category].find(item => {
+        return item.size.trim() === cartItem.size.trim() && 
+               String(item.gsm).trim() === String(cartItem.gsm).trim() &&
+               // Only check brand/color if they exist
+               (item.brand || "") === (cartItem.selectedBrand || "") &&
+               (item.color || "") === (cartItem.selectedColor || "")
+    });
+}
 	
 document.head.appendChild(style)
 </script>
