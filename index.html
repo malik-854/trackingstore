@@ -2814,7 +2814,55 @@ function removeFromCart(cartKey){
 // ===== END CHECKOUT FUNCTIONS =====
 
 // ADD TO CART FUNCTION - UPDATED FOR BRAND
-function addToCart(key){
+async function addToCart(key){
+    
+    // === PRICE VALIDATION - LIVE CHECK ===
+    try {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:V?key=${API_KEY}&_=${Date.now()}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.values) {
+            const selectedSize = window[`size_${key}`];
+            const selectedGsm = window[`gsm_${key}`];
+            
+            // Parse size
+            const sizeParts = selectedSize.split('x');
+            const length = sizeParts[0];
+            const width = sizeParts[1];
+            
+            // Get product name from the map
+            const sampleProduct = Object.values(window[`map_${key}`])[0];
+            const productName = sampleProduct?.name;
+            
+            // Find matching product in fresh data
+            const freshProduct = data.values.find(row => 
+                row[3] === productName && 
+                row[6] == length && 
+                row[7] == width && 
+                row[8] == selectedGsm
+            );
+            
+            if (freshProduct) {
+                const freshPrice = Math.round(parseFloat(freshProduct[10] || 0));
+                
+                // Get current product from map
+                const variantKey = `${selectedSize}_${selectedGsm}`;
+                const currentProduct = window[`map_${key}`][variantKey];
+                const currentPrice = currentProduct?.price;
+                
+                if (freshPrice > 0 && freshPrice !== currentPrice) {
+                    alert(`⚠️ PRICE UPDATED!\nThis product is now Rs ${freshPrice}/KG\nPlease refresh the page to see current prices.`);
+                    return;
+                }
+            }
+        }
+    } catch(e) {
+        console.log('Price check failed:', e);
+        // Allow add to cart if check fails
+    }
+    // === END PRICE VALIDATION ===
+    
     const qtyInput = document.getElementById(`qty_${key}`)
     let rawQty = qtyInput.value;
 
@@ -2824,7 +2872,7 @@ function addToCart(key){
     const selectedColor = window[`color_${key}`] || ''
     const selectedBrand = window[`brand_${key}`] || ''
 
-console.log("=== DEBUG START ===");
+    console.log("=== DEBUG START ===");
     console.log("Selected Size:", selectedSize, "GSM:", selectedGsm, "Brand:", selectedBrand, "Color:", selectedColor);
     console.log("All keys in map for this product:", Object.keys(window[`map_${key}`]));
     let debugLookupKey = `${selectedSize}_${selectedGsm}`;
@@ -2850,15 +2898,14 @@ console.log("=== DEBUG START ===");
         variantKey = `${selectedSize}_${selectedGsm}_${selectedBrand}`
     }
     // 3. Try with color only  
-    // 3. Try with color only  
-else if (selectedColor) {
-    // Include brand if available
-    if (selectedBrand) {
-        variantKey = `${selectedSize}_${selectedGsm}_${selectedBrand}_${selectedColor}`
-    } else {
-        variantKey = `${selectedSize}_${selectedGsm}_${selectedColor}`
+    else if (selectedColor) {
+        // Include brand if available
+        if (selectedBrand) {
+            variantKey = `${selectedSize}_${selectedGsm}_${selectedBrand}_${selectedColor}`
+        } else {
+            variantKey = `${selectedSize}_${selectedGsm}_${selectedColor}`
+        }
     }
-}
     // 4. Base key already set
     
     let p = window[`map_${key}`][variantKey]
@@ -2871,18 +2918,17 @@ else if (selectedColor) {
             p = window[`map_${key}`][variantKey]
         }
         // Try color without brand (if we tried with brand)
-        // Try color without brand (if we tried with brand)
-if (!p && selectedBrand && selectedColor) {
-    // Try with color only (no brand)
-    variantKey = `${selectedSize}_${selectedGsm}_${selectedColor}`
-    p = window[`map_${key}`][variantKey]
-    
-    // If still not found, try brand only (no color)
-    if (!p) {
-        variantKey = `${selectedSize}_${selectedGsm}_${selectedBrand}`
-        p = window[`map_${key}`][variantKey]
-    }
-}
+        if (!p && selectedBrand && selectedColor) {
+            // Try with color only (no brand)
+            variantKey = `${selectedSize}_${selectedGsm}_${selectedColor}`
+            p = window[`map_${key}`][variantKey]
+            
+            // If still not found, try brand only (no color)
+            if (!p) {
+                variantKey = `${selectedSize}_${selectedGsm}_${selectedBrand}`
+                p = window[`map_${key}`][variantKey]
+            }
+        }
         // Try base key (no brand, no color)
         if (!p) {
             variantKey = `${selectedSize}_${selectedGsm}`
@@ -2895,7 +2941,7 @@ if (!p && selectedBrand && selectedColor) {
         return
     }
 
-        // ✅ START OF NEW VALIDATION: Check if quantity is valid
+    // ✅ START OF NEW VALIDATION: Check if quantity is valid
     let qty = parseFloat(rawQty); // Use parseFloat for decimals
     const allowHalf = p.halfQty === true; // Check the flag from your sheet
     const evenOnly = p.evenOnly === true; // NEW: Check even-only flag
@@ -2995,7 +3041,8 @@ if (!p && selectedBrand && selectedColor) {
         addBtn.textContent = originalText
         addBtn.style.backgroundColor = ""
     }, 1000)
-}// UPDATE CART RENDER FUNCTION FOR BRAND
+}
+	// UPDATE CART RENDER FUNCTION FOR BRAND
 function renderCart(){
     const container = document.getElementById("cart-items")
     container.innerHTML = ""
