@@ -1725,7 +1725,8 @@ let globalProducts = {};
 let lunrIndex = null;
 let currentShippingMethod = 'self';
 let usingFallbackData = false;
-
+let priceCheckInterval = null;
+const PRICE_REFRESH_INTERVAL = 1 * 60 * 1000; // 1 minutes
 // Payment method handling
 function setupPaymentListeners() {
     const shopBtn = document.querySelector('label[for="pay-shop"]');
@@ -1870,12 +1871,15 @@ async function fetchProducts(){
         buildLunrIndex(groupedProducts);
         renderProducts(groupedProducts);
         
-        // Hide loading, show products
-        document.getElementById('loading-indicator').style.display = 'none';
-        document.getElementById('product-list').style.display = 'grid';
-        document.getElementById('view-cart-btn').style.display = 'flex';
-	// ADD THIS LINE:
-fetchAnnouncements();  // Load announcements
+            // Hide loading, show products
+    document.getElementById('loading-indicator').style.display = 'none';
+    document.getElementById('product-list').style.display = 'grid';
+    document.getElementById('view-cart-btn').style.display = 'flex';
+    // ADD THIS LINE:
+    fetchAnnouncements();  // Load announcements
+    
+    // START periodic price refresh
+    startPriceRefresh();
         
     } catch (error) {
         console.error('Error fetching products:', error);
@@ -3381,6 +3385,83 @@ function updatePaymentButtons() {
         shopLabel.classList.remove('active');
     }
 }
+
+// ===== PRICE REFRESH SYSTEM =====
+// Prevents users from ordering old prices from open tabs
+
+function startPriceRefresh() {
+    // Clear existing interval if any
+    if (priceCheckInterval) clearInterval(priceCheckInterval);
+    
+    // Run every 5 minutes
+    priceCheckInterval = setInterval(async function() {
+        console.log("Checking for price updates...");
+        
+        try {
+            const timestamp = new Date().getTime();
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:V?key=${API_KEY}&t=${timestamp}`;
+            
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Fetch failed');
+            
+            const data = await response.json();
+            if (!data.values) return;
+            
+            const rows = data.values.filter(r => r[COL.AVAILABILITY]?.toUpperCase() === "YES");
+            const freshGroups = group(rows);
+            
+            // Compare and update if changed
+            if (JSON.stringify(globalProducts) !== JSON.stringify(freshGroups)) {
+                console.log("Price changes detected! Updating...");
+                
+                // Store current cart before update
+                const currentCart = {...cart};
+                
+                // Update global data
+                globalProducts = freshGroups;
+                buildLunrIndex(freshGroups);
+                
+                // Re-render products with new prices
+                renderProducts(freshGroups);
+                
+                // Restore cart (keep quantities, update to new prices)
+                cart = {};
+                Object.keys(currentCart).forEach(key => {
+                    // Try to find the same product with new price
+                    const oldItem = currentCart[key];
+                    
+                    // Search in new data
+                    let found = null;
+                    Object.values(freshGroups).forEach(cat => {
+                        cat.items.forEach(item => {
+                            if (item.id === oldItem.id) {
+                                found = {...item, qty: oldItem.qty};
+                            }
+                        });
+                    });
+                    
+                    if (found) {
+                        const newKey = key; // Keep same cart key
+                        cart[newKey] = found;
+                    }
+                });
+                
+                // Update cart display
+                renderCart();
+                updateCartBadge();
+                
+                console.log("Prices updated successfully!");
+            }
+        } catch (e) {
+            console.log("Price check failed:", e);
+        }
+    }, PRICE_REFRESH_INTERVAL);
+}
+
+// Stop refresh when page unloads (cleanup)
+window.addEventListener('beforeunload', function() {
+    if (priceCheckInterval) clearInterval(priceCheckInterval);
+});
 
 document.head.appendChild(style)
 </script>
