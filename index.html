@@ -1348,42 +1348,46 @@ body {
 </head>
 <body>
 <script>
-// Auto-refresh inactive tabs after 5 minutes
-(function() {
-    let lastActiveTime = Date.now();
-    const REFRESH_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
-    
-    // Reset timer when user interacts with page
-    function resetActiveTimer() {
-        lastActiveTime = Date.now();
+// Auto-refresh inactive tabs after 1 minute - EXPOSED FOR TESTING
+window.lastActiveTime = Date.now();
+window.REFRESH_TIMEOUT = 1 * 60 * 1000; // 1 minute for testing
+
+// Reset timer when user interacts with page
+window.resetActiveTimer = function() {
+    window.lastActiveTime = Date.now();
+    console.log('Timer reset - Last active:', new Date(window.lastActiveTime).toLocaleTimeString());
+}
+
+// Check if tab has been inactive for too long
+window.checkInactivity = function() {
+    const inactiveTime = Date.now() - window.lastActiveTime;
+    console.log('Inactive seconds:', Math.round(inactiveTime/1000), '/', window.REFRESH_TIMEOUT/1000);
+    if (inactiveTime >= window.REFRESH_TIMEOUT) {
+        console.log('⚠️ REFRESHING PAGE NOW ⚠️');
+        window.location.reload(true);
     }
-    
-    // Check if tab has been inactive for too long
-    function checkInactivity() {
-        const inactiveTime = Date.now() - lastActiveTime;
-        if (inactiveTime >= REFRESH_TIMEOUT) {
-            window.location.reload(true);
-        }
+}
+
+// Listen for user activity
+window.addEventListener('load', window.resetActiveTimer);
+window.addEventListener('mousemove', window.resetActiveTimer);
+window.addEventListener('keydown', window.resetActiveTimer);
+window.addEventListener('click', window.resetActiveTimer);
+window.addEventListener('scroll', window.resetActiveTimer);
+window.addEventListener('touchstart', window.resetActiveTimer);
+
+// Check when tab becomes visible again
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        console.log('Tab became visible - checking inactivity');
+        window.checkInactivity();
     }
-    
-    // Listen for user activity
-    window.addEventListener('load', resetActiveTimer);
-    window.addEventListener('mousemove', resetActiveTimer);
-    window.addEventListener('keydown', resetActiveTimer);
-    window.addEventListener('click', resetActiveTimer);
-    window.addEventListener('scroll', resetActiveTimer);
-    window.addEventListener('touchstart', resetActiveTimer);
-    
-    // Check when tab becomes visible again
-    document.addEventListener('visibilitychange', function() {
-        if (!document.hidden) {
-            checkInactivity();
-        }
-    });
-    
-    // Also check when phone unlocks / app resumes
-    window.addEventListener('focus', checkInactivity);
-})();
+});
+
+// Also check when phone unlocks / app resumes
+window.addEventListener('focus', window.checkInactivity);
+
+console.log('✅ Refresh timer active -', window.REFRESH_TIMEOUT/1000, 'seconds');
 </script>
 <!-- Add this RIGHT AFTER <body> tag -->
 <div id="groupBanner" style="
