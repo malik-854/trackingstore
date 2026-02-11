@@ -3053,102 +3053,81 @@ function renderCart(){
 
 let isOrderBeingPlaced = false; // ADD THIS LINE AT TOP
 
-// Updated placeOrder() function with link generation and email copy
-async function placeOrder(){
+// Updated placeOrder() function with Price Freshness Shield
+async function placeOrder() {
     const btn = document.querySelector('.whatsapp-btn');
-    if (btn.disabled) return; 
+    if (btn.disabled) return;
 
     btn.innerHTML = '🔍 Checking Prices...';
     btn.disabled = true;
 
     try {
         console.log("Step 1: Fetching Fresh CSV...");
-        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSclNO5PqJ9dkcM6SVRbpVfxs4K4v_JcWq_koEALslXG22kO2zTAr1p0NdTv-2P4UkMxvCaObcERDPn/pub?output=csv'; 
-        
+        // This is the link you provided. Ensure gid=0 is your actual PRODUCTS tab.
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSclNO5PqJ9dkcM6SVRbpVfxs4K4v_JcWq_koEALslXG22kO2zTAr1p0NdTv-2P4UkMxvCaObcERDPn/pub?gid=0&single=true&output=csv';
+
         const response = await fetch(SHEET_CSV_URL);
         if (!response.ok) throw new Error("Google Sheets link is not working");
-        
+
         const csvText = await response.text();
-        console.log("Step 2: CSV Data Received. Length:", csvText.length);
+        console.log("Step 2: CSV Data Received.");
 
         const rows = csvText.split('\n').map(row => row.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')));
-        
-        // IMPORTANT: Ensure your 'group' function is available globally
+
         if (typeof group !== 'function') throw new Error("The 'group' function is missing!");
-        const freshGroups = group(rows.slice(1)); 
-        
+        const freshGroups = group(rows.slice(1));
+
         let priceChanged = false;
         let changeDetails = "";
 
         console.log("Step 3: Comparing Cart items...");
         for (let cartKey in cart) {
             const item = cart[cartKey];
-            
-            // IMPORTANT: Ensure findFreshItem is at the bottom of your script
+
             if (typeof findFreshItem !== 'function') throw new Error("The 'findFreshItem' function is missing!");
             const freshItem = findFreshItem(freshGroups, item);
 
             if (!freshItem) {
                 console.log("Item out of stock:", item.name);
-                delete cart[cartKey];
                 priceChanged = true;
-                changeDetails += `• ${item.name} is now Out of Stock.\n`;
+                changeDetails += `• ${item.name}: Now Out of Stock\n`;
             } else {
                 const livePrice = Math.round(freshItem.price);
                 const currentPrice = Math.round(item.price);
-                console.log(`Checking ${item.name}: Current ${currentPrice} vs Live ${livePrice}`);
-                
+
                 if (livePrice !== currentPrice) {
                     priceChanged = true;
-                    changeDetails += `• ${item.name}: Rs ${item.price} → Rs ${freshItem.price}\n`;
-                    cart[cartKey].price = freshItem.price;
-                    cart[cartKey].rate = freshItem.rate;
+                    changeDetails += `• ${item.name}: Rs ${currentPrice} → Rs ${livePrice}\n`;
                 }
             }
         }
 
         if (priceChanged) {
-            console.log("Price change detected! Stopping order.");
-            
-            // ⬇️ UPDATE THIS BLOCK ⬇️
-            alert(`⚠️ PRICE & STOCK UPDATE:\n\n${changeDetails}\nYour cart has been updated with live data. Please review and click "Place Order" again.`);
-            
-            renderCart(); 
-            updateCartBadge(); 
-            
-            // This closes the checkout popup so the user can see their updated cart
-            if (typeof closeCheckout === 'function') closeCheckout(); 
-
-            btn.disabled = false;
-            btn.innerHTML = 'Place Order via WhatsApp';
-            return; // This stops the code so the WhatsApp message isn't sent
+            console.log("Price/Stock change detected! Refreshing...");
+            alert(`⚠️ UPDATE DETECTED:\n\n${changeDetails}\nYour cart and prices are being updated to match our latest inventory. Please review and try again.`);
+            window.location.reload(); 
+            return;
         }
 
-        console.log("Step 4: All prices match. Proceeding to original logic...");
-        // ... (The rest of your original logic stays exactly the same)
-        // --- END OF PRICE FRESHNESS CHECK ---
+        console.log("Step 4: Prices verified. Proceeding to order generation...");
 
-        // ⬇️ EVERYTHING BELOW IS YOUR ORIGINAL WORKING CODE ⬇️
+        // --- START OF ORIGINAL ORDER LOGIC ---
         btn.innerHTML = '<span class="whatsapp-icon">⏳</span> Saving...';
 
-        // Generate unique Order ID
         const timestamp = Date.now();
         const random = Math.random().toString(36).substr(2, 6).toUpperCase();
         const orderId = `HAYYAT-${timestamp}-${random}`;
-        
-        // Generate invoice link
         const invoiceLink = `https://www.hayyatstore.com/order.html?id=${orderId}`;
-        
-        // Number formatting function
+
         function formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
-        
+
         const name = document.getElementById("cust-name").value.trim();
         const phone = document.getElementById("cust-phone").value.trim();
         const email = document.getElementById("cust-email").value.trim();
         const address = document.getElementById("delivery-address").value.trim();
-        
+
         const shippingElement = document.querySelector('input[name="shipping"]:checked');
         if (!shippingElement) {
             alert("Please select a shipping method");
@@ -3157,47 +3136,41 @@ async function placeOrder(){
         }
         const shipping = shippingElement.value;
 
-        if(!name){
+        if (!name) {
             alert("Please enter your full name");
             document.getElementById("cust-name").focus();
             btn.disabled = false; btn.innerHTML = 'Place Order via WhatsApp';
             return;
         }
 
-        if(!phone || phone.length < 10){
+        if (!phone || phone.length < 10) {
             alert("Please enter a valid phone number");
             document.getElementById("cust-phone").focus();
             btn.disabled = false; btn.innerHTML = 'Place Order via WhatsApp';
             return;
         }
 
-        if((shipping === "open" || shipping === "bundle") && !address){
+        if ((shipping === "open" || shipping === "bundle") && !address) {
             alert("Please enter delivery address");
             document.getElementById("delivery-address").focus();
             btn.disabled = false; btn.innerHTML = 'Place Order via WhatsApp';
             return;
         }
 
-        // Calculate order details
         let total = 0;
         let totalWeight = 0;
         const orderItems = [];
-        
+
         Object.values(cart).forEach(i => {
             const itemTotal = i.price * i.qty;
             const itemWeight = i.weight * i.qty;
             total += itemTotal;
             totalWeight += itemWeight;
-            
-            // Build specifications
+
             let specs = `${i.size}, GSM ${i.gsm}`;
-            if (i.selectedBrand && i.selectedBrand !== '') {
-                specs += `, ${i.selectedBrand}`;
-            }
-            if (i.selectedColor && i.selectedColor !== '') {
-                specs += `, ${i.selectedColor}`;
-            }
-            
+            if (i.selectedBrand && i.selectedBrand !== '') specs += `, ${i.selectedBrand}`;
+            if (i.selectedColor && i.selectedColor !== '') specs += `, ${i.selectedColor}`;
+
             orderItems.push({
                 name: i.name,
                 specs: specs,
@@ -3211,93 +3184,22 @@ async function placeOrder(){
         });
 
         let deliveryCharges = 0;
-        if(shipping === "open" || shipping === "bundle"){
+        if (shipping === "open" || shipping === "bundle") {
             if (shipping === "open") {
-                // OPEN delivery logic
                 let baseCharges = Math.max(Math.round(totalWeight * 3), 450);
                 let currentTotalWithBase = total + baseCharges;
-                
                 if (currentTotalWithBase % 100 === 0) {
                     deliveryCharges = baseCharges;
                 } else {
-                    let remainder = currentTotalWithBase % 100;
-                    let amountToAdd = 100 - remainder;
-                    deliveryCharges = baseCharges + amountToAdd;
+                    deliveryCharges = baseCharges + (100 - (currentTotalWithBase % 100));
                 }
             } else if (shipping === "bundle") {
-                // BUNDLE delivery logic
                 let bundles = totalWeight / 70;
-                let decimalPart = bundles % 1;
-                
-                if (decimalPart <= 0.5) {
-                    bundles = Math.floor(bundles);
-                } else {
-                    bundles = Math.ceil(bundles);
-                }
-                
-                bundles = Math.max(1, bundles);
-                deliveryCharges = bundles * 250;
+                bundles = (bundles % 1 <= 0.5) ? Math.floor(bundles) : Math.ceil(bundles);
+                deliveryCharges = Math.max(1, bundles) * 250;
             }
-            
             total += deliveryCharges;
         }
-
-        // Build orderSummary for email
-        let orderSummary = "✅ *Order placed through www.hayyatstore.com*\n\n";
-        orderSummary += "📄 *NEW PAPER ORDER REQUEST* 📄\n\n";
-
-        const subtotal = total - deliveryCharges;
-        orderSummary += "*Order Summary:*\n";
-        orderSummary += `Subtotal: Rs ${formatNumber(subtotal)}\n`;
-        if(deliveryCharges > 0) orderSummary += `Delivery: Rs ${formatNumber(deliveryCharges)}\n`;
-        orderSummary += `*GRAND TOTAL: Rs ${formatNumber(total)}*\n`;
-        orderSummary += `Total Weight: ${Math.round(totalWeight)} KG\n\n`;
-
-        // CUSTOMER DETAILS
-        orderSummary += "*Customer Details:*\n";
-        orderSummary += `👤 Name: ${name}\n`;
-        orderSummary += `📱 Phone: ${phone}\n`;
-        if(email) orderSummary += `📧 Email: ${email}\n`;
-        orderSummary += `🚚 Shipping: ${shipping === "self" ? "Self Pickup" : shipping === "open" ? "Delivery - Open" : "Delivery - Bundle"}\n`;
-        orderSummary += `💰 Payment: ${document.querySelector('input[name="payment"]:checked').value === "bank" ? "Bank Transfer" : "Pay at Shop"}\n`;
-        if(shipping === "open" || shipping === "bundle") {
-            orderSummary += `📍 Address: ${address}\n`;
-            orderSummary += `💰 Delivery Charges (${shipping === "open" ? "Open" : "Bundle"}): Rs ${formatNumber(deliveryCharges)}\n`;
-        }
-        orderSummary += `\n*Order Items (${Object.keys(cart).length} types):*\n`;
-
-        Object.values(cart).forEach((i, index) => {
-            const itemTotal = i.price * i.qty;
-            const itemWeight = i.weight * i.qty;
-            const formattedPrice = formatNumber(i.price);
-            const formattedItemTotal = formatNumber(itemTotal);
-            orderSummary += `${index + 1}. *${i.name}*\n`;
-            let specs = `Size: ${i.size} | GSM: ${i.gsm}`;
-            if (i.selectedBrand && i.selectedBrand !== '') { specs += ` | Brand: ${i.selectedBrand}`; }
-            if (i.selectedColor && i.selectedColor !== '') { specs += ` | Color: ${i.selectedColor}`; }
-            orderSummary += `   ${specs}\n`;
-            orderSummary += `   Qty: ${i.qty} packs × Rs ${formattedPrice} = Rs ${formattedItemTotal}\n`;
-            orderSummary += `   Weight: ${Math.round(itemWeight)} KG @ Rs ${i.rate}/KG\n\n`;
-        });
-
-        orderSummary += `⏳ _Please confirm availability and provide payment details._`;
-
-        // Prepare order data for Google Sheets
-        const orderData = {
-            orderId: orderId,
-            invoiceLink: invoiceLink,
-            customerName: name,
-            customerPhone: phone,
-            customerEmail: email || '',
-            shippingMethod: shipping === "self" ? "Self Pickup" : (shipping === "open" ? "Delivery - Open" : "Delivery - Bundle"),
-            paymentMethod: document.querySelector('input[name="payment"]:checked').value === "bank" ? "Bank Transfer" : "Pay at Shop",
-            deliveryAddress: address || '',
-            orderItems: orderItems,
-            totalAmount: total,
-            totalWeight: Math.round(totalWeight),
-            subtotal: total - deliveryCharges,
-            deliveryCharges: deliveryCharges
-        };
 
         // WhatsApp Preparation
         let whatsappMessage = `📦 *NEW ORDER - HAYYAT PAPER STORE*\n\n`;
@@ -3313,25 +3215,15 @@ async function placeOrder(){
                              ? "923046470666" : "923036470666";
 
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
-
-        // Execute WhatsApp Redirect
+        
+        // Execute Redirect
         window.location.href = whatsappUrl;
 
-        // Background Saving
+        // Background Data Saving (Google Sheets & Email)
+        const orderData = { orderId, invoiceLink, customerName: name, customerPhone: phone, customerEmail: email || '', shippingMethod: shipping, paymentMethod: document.querySelector('input[name="payment"]:checked').value, deliveryAddress: address || '', orderItems, totalAmount: total, totalWeight: Math.round(totalWeight), subtotal: total - deliveryCharges, deliveryCharges };
         saveOrderToGoogleSheets(orderData).catch(err => console.error('Sheet Save Error:', err));
 
-        const emailData = {
-            customerName: name,
-            customerPhone: phone,
-            customerEmail: email || 'Not provided',
-            shippingMethod: shipping === "self" ? "Self Pickup" : (shipping === "open" ? "Delivery - Open" : "Delivery - Bundle"),
-            paymentMethod: document.querySelector('input[name="payment"]:checked').value === "bank" ? "Bank Transfer" : "Pay at Shop",
-            deliveryAddress: address || 'Not applicable',
-            orderSummary: orderSummary,
-            orderTotal: total,
-            orderWeight: Math.round(totalWeight)
-        };
-
+        const emailData = { customerName: name, customerPhone: phone, customerEmail: email || 'Not provided', shippingMethod: shipping, paymentMethod: document.querySelector('input[name="payment"]:checked').value, deliveryAddress: address || 'Not applicable', orderSummary: "See Link", orderTotal: total, orderWeight: Math.round(totalWeight) };
         fetch('https://script.google.com/macros/s/AKfycbw-h33gLXwPGRdnlURFncIhf3W8AS55ikyJN8Db4IZaydA4BwXxyG4gkSghUlluOznFWg/exec', {
             method: 'POST',
             mode: 'no-cors',
@@ -3339,7 +3231,7 @@ async function placeOrder(){
             body: JSON.stringify(emailData)
         }).catch(err => console.error('Email Backup Error:', err));
 
-        // UI CLEANUP
+        // UI Cleanup
         setTimeout(() => {
             closeCheckout();
             cart = {};
@@ -3351,7 +3243,7 @@ async function placeOrder(){
 
     } catch (error) {
         console.error('Order error:', error);
-        alert('Error saving order. Please try again or contact support.');
+        alert('An error occurred. Please try again.');
         btn.disabled = false;
         btn.innerHTML = 'Place Order via WhatsApp';
     }
@@ -3442,21 +3334,33 @@ function updatePaymentButtons() {
 }
 
 function findFreshItem(groups, cartItem) {
-    // 1. Find the correct category (e.g., NINGO)
-    // We use toUpperCase and trim to avoid "Ningo" vs "ningo" errors
+    // 1. Match the Brand/Category Name (e.g., "Ningbo Bleach")
+    // Using trim and toUpperCase to prevent "ningbo" vs "Ningbo" mismatch
     const category = Object.keys(groups).find(cat => 
         cat.trim().toUpperCase() === cartItem.name.trim().toUpperCase()
     );
 
     if (!category) return null;
 
-    // 2. Look through the items in that category
+    // 2. Search items in that category using Length (G), Width (H), and GSM (I)
     return groups[category].find(item => {
-        return item.size.trim() === cartItem.size.trim() && 
-               String(item.gsm).trim() === String(cartItem.gsm).trim() &&
-               // Only check brand/color if they exist
-               (item.brand || "") === (cartItem.selectedBrand || "") &&
-               (item.color || "") === (cartItem.selectedColor || "")
+        // We use indices [6], [7], and [8] which correspond to Columns G, H, and I
+        // item[6] = Length (Column G)
+        // item[7] = Width (Column H)
+        // item[8] = GSM (Column I)
+        
+        const sheetLength = String(item[6] || "").trim();
+        const sheetWidth  = String(item[7] || "").trim();
+        const sheetGSM    = String(item[8] || "").trim();
+        
+        const cartLength = String(cartItem.length || "").trim();
+        const cartWidth  = String(cartItem.width || "").trim();
+        const cartGSM    = String(cartItem.gsm || "").trim();
+        
+        // Only return true if all three specifications match exactly
+        return sheetLength === cartLength && 
+               sheetWidth  === cartWidth  && 
+               sheetGSM    === cartGSM;
     });
 }
 	
