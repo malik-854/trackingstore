@@ -2849,7 +2849,8 @@ async function addToCart(key){
                 // Get current product from map
                 const variantKey = `${selectedSize}_${selectedGsm}`;
                 const currentProduct = window[`map_${key}`][variantKey];
-                const currentPrice = currentProduct?.price;
+                const currentPrice = p?.price;
+				console.log('Fresh price:', freshPrice, 'Current price:', currentPrice);
                 
                 if (freshPrice > 0 && freshPrice !== currentPrice) {
                     alert(`⚠️ PRICE UPDATED!\nThis product is now Rs ${freshPrice}/KG\nPlease refresh the page to see current prices.`);
