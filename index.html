@@ -1736,6 +1736,7 @@ function setupPaymentListeners() {
     // Click on labels
     if (shopBtn) {
         shopBtn.addEventListener('click', function() {
+			lastUserActivity = Date.now();
             shopRadio.checked = true;
             updatePaymentButtons();
         });
@@ -1743,6 +1744,7 @@ function setupPaymentListeners() {
     
     if (bankBtn) {
         bankBtn.addEventListener('click', function() {
+			lastUserActivity = Date.now();
             bankRadio.checked = true;
             updatePaymentButtons();
         });
@@ -1750,12 +1752,18 @@ function setupPaymentListeners() {
     
     // Also listen to radio button changes directly
     if (shopRadio) {
-        shopRadio.addEventListener('change', updatePaymentButtons);
-    }
-    
-    if (bankRadio) {
-        bankRadio.addEventListener('change', updatePaymentButtons);
-    }
+    shopRadio.addEventListener('change', function() {
+        lastUserActivity = Date.now(); // ADD THIS LINE
+        updatePaymentButtons();
+    });
+}
+
+if (bankRadio) {
+    bankRadio.addEventListener('change', function() {
+        lastUserActivity = Date.now(); // ADD THIS LINE
+        updatePaymentButtons();
+    });
+}
     
     // Initial update
     updatePaymentButtons();
@@ -1767,18 +1775,22 @@ document.addEventListener('DOMContentLoaded', function() {
     setupShippingListeners();
 setupPaymentListeners();
     
-    // Close cart when clicking outside on mobile
-    document.addEventListener('click', function(event) {
-        const cartContainer = document.getElementById('cart-container');
-        const cartBtn = document.getElementById('view-cart-btn');
-        
-        if (cartContainer.classList.contains('active') && 
-            !cartContainer.contains(event.target) && 
-            event.target !== cartBtn && 
-            !cartBtn.contains(event.target)) {
-            closeCart();
-        }
-    });
+    // Close cart when clicking outside on mobile AND track activity
+document.addEventListener('click', function(event) {
+    // Update activity timestamp
+    lastUserActivity = Date.now();
+    
+    // Cart closing logic
+    const cartContainer = document.getElementById('cart-container');
+    const cartBtn = document.getElementById('view-cart-btn');
+    
+    if (cartContainer.classList.contains('active') && 
+        !cartContainer.contains(event.target) && 
+        event.target !== cartBtn && 
+        !cartBtn.contains(event.target)) {
+        closeCart();
+    }
+});
 });
 
 function setupShippingListeners() {
@@ -1818,6 +1830,7 @@ function setupShippingListeners() {
     
     if (selfLabel) {
         selfLabel.addEventListener('click', function() {
+			lastUserActivity = Date.now();
             document.getElementById('shipping-self').checked = true;
             updateShipping('self');
         });
@@ -1825,6 +1838,7 @@ function setupShippingListeners() {
     
     if (openLabel) {
         openLabel.addEventListener('click', function() {
+			lastUserActivity = Date.now();
             document.getElementById('shipping-delivery-open').checked = true;
             updateShipping('open');
         });
@@ -1832,6 +1846,7 @@ function setupShippingListeners() {
     
     if (bundleLabel) {
         bundleLabel.addEventListener('click', function() {
+			lastUserActivity = Date.now();
             document.getElementById('shipping-delivery-bundle').checked = true;
             updateShipping('bundle');
         });
