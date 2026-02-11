@@ -3055,55 +3055,70 @@ let isOrderBeingPlaced = false; // ADD THIS LINE AT TOP
 
 // Updated placeOrder() function with link generation and email copy
 async function placeOrder(){
-    // ⬇️ ORIGINAL STARTING LOGIC ⬇️
     const btn = document.querySelector('.whatsapp-btn');
     if (btn.disabled) return; 
-    
-    // UI Feedback
-    btn.innerHTML = '<span class="whatsapp-icon">⏳</span> Verifying Prices...';
+
+    btn.innerHTML = '🔍 Checking Prices...';
     btn.disabled = true;
 
     try {
-        // --- START OF PRICE FRESHNESS CHECK (THE UPDATE) ---
-        // 1. Fetch latest data from your sheet
+        console.log("Step 1: Fetching Fresh CSV...");
         const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSclNO5PqJ9dkcM6SVRbpVfxs4K4v_JcWq_koEALslXG22kO2zTAr1p0NdTv-2P4UkMxvCaObcERDPn/pub?output=csv'; 
-        const response = await fetch(SHEET_CSV_URL); 
+        
+        const response = await fetch(SHEET_CSV_URL);
+        if (!response.ok) throw new Error("Google Sheets link is not working");
+        
         const csvText = await response.text();
+        console.log("Step 2: CSV Data Received. Length:", csvText.length);
+
         const rows = csvText.split('\n').map(row => row.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')));
         
-        // Re-group the fresh data using your existing group function
+        // IMPORTANT: Ensure your 'group' function is available globally
+        if (typeof group !== 'function') throw new Error("The 'group' function is missing!");
         const freshGroups = group(rows.slice(1)); 
         
         let priceChanged = false;
         let changeDetails = "";
 
-        // Compare every item in current cart against fresh data
+        console.log("Step 3: Comparing Cart items...");
         for (let cartKey in cart) {
             const item = cart[cartKey];
+            
+            // IMPORTANT: Ensure findFreshItem is at the bottom of your script
+            if (typeof findFreshItem !== 'function') throw new Error("The 'findFreshItem' function is missing!");
             const freshItem = findFreshItem(freshGroups, item);
 
             if (!freshItem) {
+                console.log("Item out of stock:", item.name);
                 delete cart[cartKey];
                 priceChanged = true;
                 changeDetails += `• ${item.name} is now Out of Stock.\n`;
-            } else if (Math.round(freshItem.price) !== Math.round(item.price)) {
-                priceChanged = true;
-                changeDetails += `• ${item.name}: Rs ${item.price} → Rs ${freshItem.price}\n`;
-                // Update cart item with live price and rate
-                cart[cartKey].price = freshItem.price;
-                cart[cartKey].rate = freshItem.rate;
+            } else {
+                const livePrice = Math.round(freshItem.price);
+                const currentPrice = Math.round(item.price);
+                console.log(`Checking ${item.name}: Current ${currentPrice} vs Live ${livePrice}`);
+                
+                if (livePrice !== currentPrice) {
+                    priceChanged = true;
+                    changeDetails += `• ${item.name}: Rs ${item.price} → Rs ${freshItem.price}\n`;
+                    cart[cartKey].price = freshItem.price;
+                    cart[cartKey].rate = freshItem.rate;
+                }
             }
         }
 
-        // If changes were found, alert user and stop execution
         if (priceChanged) {
-            alert(`⚠️ PRICE UPDATE:\n\n${changeDetails}\nPrices have changed since you opened the page. Your cart has been updated. Please click "Place Order" again.`);
+            console.log("Price change detected! Stopping order.");
+            alert(`⚠️ PRICE UPDATE:\n\n${changeDetails}\nPrices have changed. Your cart has been updated. Please click "Place Order" again.`);
             renderCart();
             updateCartBadge();
             btn.disabled = false;
             btn.innerHTML = 'Place Order via WhatsApp';
-            return; // EXIT HERE
+            return; 
         }
+
+        console.log("Step 4: All prices match. Proceeding to original logic...");
+        // ... (The rest of your original logic stays exactly the same)
         // --- END OF PRICE FRESHNESS CHECK ---
 
         // ⬇️ EVERYTHING BELOW IS YOUR ORIGINAL WORKING CODE ⬇️
