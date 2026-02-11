@@ -1347,7 +1347,8 @@ body {
 </style>
 </head>
 <body>
-/ Auto-refresh inactive tabs after 5 minutes
+<script>
+// Auto-refresh inactive tabs after 5 minutes
 (function() {
     let lastActiveTime = Date.now();
     const REFRESH_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
@@ -1383,6 +1384,7 @@ body {
     // Also check when phone unlocks / app resumes
     window.addEventListener('focus', checkInactivity);
 })();
+</script>
 <!-- Add this RIGHT AFTER <body> tag -->
 <div id="groupBanner" style="
     background: linear-gradient(135deg, #ff8400, #ff8400);
