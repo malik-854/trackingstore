@@ -1725,7 +1725,6 @@ let globalProducts = {};
 let lunrIndex = null;
 let currentShippingMethod = 'self';
 let usingFallbackData = false;
-let window.lastUserActivity = Date.now(); // ADD THIS LINE HERE
 
 // Payment method handling
 function setupPaymentListeners() {
@@ -1737,7 +1736,6 @@ function setupPaymentListeners() {
     // Click on labels
     if (shopBtn) {
         shopBtn.addEventListener('click', function() {
-			
             shopRadio.checked = true;
             updatePaymentButtons();
         });
@@ -1745,7 +1743,6 @@ function setupPaymentListeners() {
     
     if (bankBtn) {
         bankBtn.addEventListener('click', function() {
-			
             bankRadio.checked = true;
             updatePaymentButtons();
         });
@@ -1753,18 +1750,12 @@ function setupPaymentListeners() {
     
     // Also listen to radio button changes directly
     if (shopRadio) {
-    shopRadio.addEventListener('change', function() {
-         // ADD THIS LINE
-        updatePaymentButtons();
-    });
-}
-
-if (bankRadio) {
-    bankRadio.addEventListener('change', function() {
-         // ADD THIS LINE
-        updatePaymentButtons();
-    });
-}
+        shopRadio.addEventListener('change', updatePaymentButtons);
+    }
+    
+    if (bankRadio) {
+        bankRadio.addEventListener('change', updatePaymentButtons);
+    }
     
     // Initial update
     updatePaymentButtons();
@@ -1772,27 +1763,22 @@ if (bankRadio) {
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', function() {
-	 // ADD THIS LINE
     fetchProducts();
     setupShippingListeners();
 setupPaymentListeners();
     
-    // Close cart when clicking outside on mobile AND track activity
-document.addEventListener('click', function(event) {
-    // Update activity timestamp
-    
-    
-    // Cart closing logic
-    const cartContainer = document.getElementById('cart-container');
-    const cartBtn = document.getElementById('view-cart-btn');
-    
-    if (cartContainer.classList.contains('active') && 
-        !cartContainer.contains(event.target) && 
-        event.target !== cartBtn && 
-        !cartBtn.contains(event.target)) {
-        closeCart();
-    }
-});
+    // Close cart when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+        const cartContainer = document.getElementById('cart-container');
+        const cartBtn = document.getElementById('view-cart-btn');
+        
+        if (cartContainer.classList.contains('active') && 
+            !cartContainer.contains(event.target) && 
+            event.target !== cartBtn && 
+            !cartBtn.contains(event.target)) {
+            closeCart();
+        }
+    });
 });
 
 function setupShippingListeners() {
@@ -1832,7 +1818,6 @@ function setupShippingListeners() {
     
     if (selfLabel) {
         selfLabel.addEventListener('click', function() {
-			
             document.getElementById('shipping-self').checked = true;
             updateShipping('self');
         });
@@ -1840,7 +1825,6 @@ function setupShippingListeners() {
     
     if (openLabel) {
         openLabel.addEventListener('click', function() {
-			
             document.getElementById('shipping-delivery-open').checked = true;
             updateShipping('open');
         });
@@ -1848,7 +1832,6 @@ function setupShippingListeners() {
     
     if (bundleLabel) {
         bundleLabel.addEventListener('click', function() {
-			
             document.getElementById('shipping-delivery-bundle').checked = true;
             updateShipping('bundle');
         });
@@ -3400,42 +3383,6 @@ function updatePaymentButtons() {
 }
 
 document.head.appendChild(style)
-	// ===== SIMPLE AUTO-REFRESH =====
-// Global variable accessible everywhere
-
-// Track ALL activity
-function updateActivity() {
-    window.lastUserActivity = Date.now();
-}
-
-document.addEventListener('click', updateActivity);
-document.addEventListener('keypress', updateActivity);
-document.addEventListener('mousemove', updateActivity);
-document.addEventListener('scroll', updateActivity);
-document.addEventListener('touchstart', updateActivity);
-document.addEventListener('touchmove', updateActivity);
-
-// Check every 10 seconds
-setInterval(function() {
-    const secondsInactive = (Date.now() - window.lastUserActivity) / 1000;
-    console.log(`Inactive for: ${secondsInactive.toFixed(1)} seconds`);
-    
-    if (secondsInactive >= 60) { // 1 minute
-        console.log('Auto-refreshing due to inactivity');
-        location.reload();
-    }
-}, 10000);
-
-// Also check when returning to tab
-document.addEventListener('visibilitychange', function() {
-    if (!document.hidden) {
-        const secondsInactive = (Date.now() - window.lastUserActivity) / 1000;
-        console.log(`Returned to tab after ${secondsInactive.toFixed(1)} seconds`);
-        if (secondsInactive >= 60) {
-            setTimeout(() => location.reload(), 1000);
-        }
-    }
-});
 </script>
 </body>
 </html>
