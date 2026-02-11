@@ -3053,144 +3053,233 @@ function renderCart(){
 
 let isOrderBeingPlaced = false; // ADD THIS LINE AT TOP
 
-// Updated placeOrder() function with Price Freshness Shield
-async function placeOrder() {
+// Updated placeOrder() function with link generation and email copy
+async function placeOrder(){
+    // ⬇️ ADD THESE 2 LINES AT THE START ⬇️
     const btn = document.querySelector('.whatsapp-btn');
-    if (btn.disabled) return;
+    if (btn.disabled) return; else btn.innerHTML = '<span class="whatsapp-icon">⏳</span> Saving...', btn.disabled = true;
+    // Generate unique Order ID
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substr(2, 6).toUpperCase();
+    const orderId = `HAYYAT-${timestamp}-${random}`;
+    
+    // Generate invoice link
+    const invoiceLink = `https://www.hayyatstore.com/order.html?id=${orderId}`;
+    
+    // Number formatting function
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    
+    const name = document.getElementById("cust-name").value.trim();
+    const phone = document.getElementById("cust-phone").value.trim();
+    const email = document.getElementById("cust-email").value.trim();
+    const address = document.getElementById("delivery-address").value.trim();
+    
+    const shippingElement = document.querySelector('input[name="shipping"]:checked');
+    if (!shippingElement) {
+        alert("Please select a shipping method");
+        btn.disabled = false; btn.innerHTML = 'Place Order via WhatsApp';
+        return;
+    }
+    const shipping = shippingElement.value;
 
-    btn.innerHTML = '🔍 Checking Prices...';
-    btn.disabled = true;
+    if(!name){
+        alert("Please enter your full name");
+        document.getElementById("cust-name").focus();
+        btn.disabled = false; btn.innerHTML = 'Place Order via WhatsApp';
+        return;
+    }
+
+    if(!phone || phone.length < 10){
+        alert("Please enter a valid phone number");
+        document.getElementById("cust-phone").focus();
+        btn.disabled = false; btn.innerHTML = 'Place Order via WhatsApp';
+        return;
+    }
+
+    if((shipping === "open" || shipping === "bundle") && !address){
+        alert("Please enter delivery address");
+        document.getElementById("delivery-address").focus();
+        btn.disabled = false; btn.innerHTML = 'Place Order via WhatsApp';
+        return;
+    }
+
+    // Calculate order details
+    let total = 0;
+    let totalWeight = 0;
+    const orderItems = [];
+    
+    Object.values(cart).forEach(i => {
+        const itemTotal = i.price * i.qty;
+        const itemWeight = i.weight * i.qty;
+        total += itemTotal;
+        totalWeight += itemWeight;
+        
+        // Build specifications
+        let specs = `${i.size}, GSM ${i.gsm}`;
+        if (i.selectedBrand && i.selectedBrand !== '') {
+            specs += `, ${i.selectedBrand}`;
+        }
+        if (i.selectedColor && i.selectedColor !== '') {
+            specs += `, ${i.selectedColor}`;
+        }
+        
+        orderItems.push({
+            name: i.name,
+            specs: specs,
+            qty: i.qty,
+            price: i.price,
+            weight: i.weight,
+            rate: i.rate,
+            total: itemTotal,
+            weightTotal: itemWeight
+        });
+    });
+
+    let deliveryCharges = 0;
+    if(shipping === "open" || shipping === "bundle"){
+        if (shipping === "open") {
+            // OPEN delivery logic
+            let baseCharges = Math.max(Math.round(totalWeight * 3), 450);
+            let currentTotalWithBase = total + baseCharges;
+            
+            if (currentTotalWithBase % 100 === 0) {
+                deliveryCharges = baseCharges;
+            } else {
+                let remainder = currentTotalWithBase % 100;
+                let amountToAdd = 100 - remainder;
+                deliveryCharges = baseCharges + amountToAdd;
+            }
+        } else if (shipping === "bundle") {
+            // BUNDLE delivery logic
+            let bundles = totalWeight / 70;
+            let decimalPart = bundles % 1;
+            
+            if (decimalPart <= 0.5) {
+                bundles = Math.floor(bundles);
+            } else {
+                bundles = Math.ceil(bundles);
+            }
+            
+            bundles = Math.max(1, bundles);
+            deliveryCharges = bundles * 250;
+        }
+        
+        total += deliveryCharges;
+    }
+
+    // Build orderSummary for email (keep exactly same format as before)
+    let orderSummary = "✅ *Order placed through www.hayyatstore.com*\n\n";
+    orderSummary += "📄 *NEW PAPER ORDER REQUEST* 📄\n\n";
+
+    // ORDER SUMMARY AT THE TOP
+    const subtotal = total - deliveryCharges;
+    orderSummary += "*Order Summary:*\n";
+    orderSummary += `Subtotal: Rs ${formatNumber(subtotal)}\n`;
+    if(deliveryCharges > 0) orderSummary += `Delivery: Rs ${formatNumber(deliveryCharges)}\n`;
+    orderSummary += `*GRAND TOTAL: Rs ${formatNumber(total)}*\n`;
+    orderSummary += `Total Weight: ${Math.round(totalWeight)} KG\n\n`;
+
+    // CUSTOMER DETAILS
+    orderSummary += "*Customer Details:*\n";
+    orderSummary += `👤 Name: ${name}\n`;
+    orderSummary += `📱 Phone: ${phone}\n`;
+    if(email) orderSummary += `📧 Email: ${email}\n`;
+    orderSummary += `🚚 Shipping: ${shipping === "self" ? "Self Pickup" : shipping === "open" ? "Delivery - Open" : "Delivery - Bundle"}\n`;
+    orderSummary += `💰 Payment: ${document.querySelector('input[name="payment"]:checked').value === "bank" ? "Bank Transfer" : "Pay at Shop"}\n`;
+    if(shipping === "open" || shipping === "bundle") {
+        orderSummary += `📍 Address: ${address}\n`;
+        orderSummary += `💰 Delivery Charges (${shipping === "open" ? "Open" : "Bundle"}): Rs ${formatNumber(deliveryCharges)}\n`;
+    }
+    orderSummary += `\n*Order Items (${Object.keys(cart).length} types):*\n`;
+
+    // ORDER ITEMS WITH FORMATTED PRICES
+    Object.values(cart).forEach((i, index) => {
+        const itemTotal = i.price * i.qty;
+        const itemWeight = i.weight * i.qty;
+        const formattedPrice = formatNumber(i.price);
+        const formattedItemTotal = formatNumber(itemTotal);
+        
+        orderSummary += `${index + 1}. *${i.name}*\n`;
+        
+        // Build specifications line
+        let specs = `Size: ${i.size} | GSM: ${i.gsm}`;
+        if (i.selectedBrand && i.selectedBrand !== '') {
+            specs += ` | Brand: ${i.selectedBrand}`;
+        }
+        if (i.selectedColor && i.selectedColor !== '') {
+            specs += ` | Color: ${i.selectedColor}`;
+        }
+        orderSummary += `   ${specs}\n`;
+        
+        orderSummary += `   Qty: ${i.qty} packs × Rs ${formattedPrice} = Rs ${formattedItemTotal}\n`;
+        orderSummary += `   Weight: ${Math.round(itemWeight)} KG @ Rs ${i.rate}/KG\n\n`;
+    });
+
+    orderSummary += `⏳ _Please confirm availability and provide payment details._`;
+
+    // Prepare order data for Google Sheets
+    const orderData = {
+        orderId: orderId,
+        invoiceLink: invoiceLink,
+        customerName: name,
+        customerPhone: phone,
+        customerEmail: email || '',
+        shippingMethod: shipping === "self" ? "Self Pickup" : (shipping === "open" ? "Delivery - Open" : "Delivery - Bundle"),
+        paymentMethod: document.querySelector('input[name="payment"]:checked').value === "bank" ? "Bank Transfer" : "Pay at Shop",
+        deliveryAddress: address || '',
+        orderItems: orderItems,
+        totalAmount: total,
+        totalWeight: Math.round(totalWeight),
+        subtotal: total - deliveryCharges,
+        deliveryCharges: deliveryCharges
+    };
 
     try {
-        console.log("Step 1: Fetching Fresh CSV...");
-        // This is your Product Tab link (gid=0)
-        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSclNO5PqJ9dkcM6SVRbpVfxs4K4v_JcWq_koEALslXG22kO2zTAr1p0NdTv-2P4UkMxvCaObcERDPn/pub?gid=0&single=true&output=csv';
-
-        const response = await fetch(SHEET_CSV_URL);
-        if (!response.ok) throw new Error("Google Sheets link is not working");
-
-        const csvText = await response.text();
-        console.log("Step 2: CSV Data Received.");
-
-        // Parse CSV into rows
-        const rows = csvText.split('\n').map(row => row.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')));
-        const dataRows = rows.slice(1); // Skip the header row
-
-        let priceChanged = false;
-        let changeDetails = "";
-
-        console.log("Step 3: Comparing Cart items...");
-        for (let cartKey in cart) {
-            const item = cart[cartKey];
-
-            // Use the findFreshItem helper to scan all rows
-            const freshRow = findFreshItem(dataRows, item);
-
-            if (!freshRow) {
-                console.log("Item out of stock or mismatch:", item.name);
-                priceChanged = true;
-                changeDetails += `• ${item.name} (${item.size}): Now Out of Stock\n`;
-            } else {
-                // Column M (Index 12) is the Calculated Price from your screenshot
-                const livePrice = Math.round(parseFloat(freshRow[12]));
-                const currentPrice = Math.round(item.price);
-
-                console.log(`Checking ${item.name}: Sheet ${livePrice} vs Cart ${currentPrice}`);
-
-                if (livePrice !== currentPrice) {
-                    priceChanged = true;
-                    changeDetails += `• ${item.name}: Rs ${currentPrice} → Rs ${livePrice}\n`;
-                }
-            }
-        }
-
-        if (priceChanged) {
-            console.log("Price/Stock change detected! Refreshing store...");
-            alert(`⚠️ UPDATE DETECTED:\n\n${changeDetails}\nYour cart and prices are being updated to match our latest inventory. Please review and try again.`);
-            window.location.reload(); 
-            return;
-        }
-
-        console.log("Step 4: Prices verified. Proceeding to WhatsApp...");
-
-        // --- START OF ORIGINAL ORDER GENERATION LOGIC ---
-        btn.innerHTML = '<span class="whatsapp-icon">⏳</span> Saving...';
-
-        const timestamp = Date.now();
-        const random = Math.random().toString(36).substr(2, 6).toUpperCase();
-        const orderId = `HAYYAT-${timestamp}-${random}`;
-        const invoiceLink = `https://www.hayyatstore.com/order.html?id=${orderId}`;
-
-        function formatNumber(num) {
-            return num ? num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0";
-        }
-
-        const name = document.getElementById("cust-name").value.trim();
-        const phone = document.getElementById("cust-phone").value.trim();
-        const email = document.getElementById("cust-email").value.trim();
-        const address = document.getElementById("delivery-address").value.trim();
-
-        const shippingElement = document.querySelector('input[name="shipping"]:checked');
-        if (!shippingElement) {
-            alert("Please select a shipping method");
-            btn.disabled = false; btn.innerHTML = 'Place Order via WhatsApp';
-            return;
-        }
-        const shipping = shippingElement.value;
-
-        // Basic validation
-        if (!name) { alert("Please enter your name"); btn.disabled = false; return; }
-        if (!phone || phone.length < 10) { alert("Please enter valid phone"); btn.disabled = false; return; }
-
-        let total = 0;
-        let totalWeight = 0;
-        const orderItems = [];
-
-        Object.values(cart).forEach(i => {
-            const itemTotal = i.price * i.qty;
-            const itemWeight = i.weight * i.qty;
-            total += itemTotal;
-            totalWeight += itemWeight;
-
-            let specs = `${i.size}, GSM ${i.gsm}`;
-            orderItems.push({
-                name: i.name, specs, qty: i.qty, price: i.price, weight: i.weight, rate: i.rate, total: itemTotal, weightTotal: itemWeight
-            });
-        });
-
-        // Delivery calculation logic
-        let deliveryCharges = 0;
-        if (shipping === "open" || shipping === "bundle") {
-            if (shipping === "open") {
-                let baseCharges = Math.max(Math.round(totalWeight * 3), 450);
-                let currentTotalWithBase = total + baseCharges;
-                deliveryCharges = (currentTotalWithBase % 100 === 0) ? baseCharges : baseCharges + (100 - (currentTotalWithBase % 100));
-            } else {
-                let bundles = Math.max(1, (totalWeight / 70 % 1 <= 0.5) ? Math.floor(totalWeight / 70) : Math.ceil(totalWeight / 70));
-                deliveryCharges = bundles * 250;
-            }
-            total += deliveryCharges;
-        }
-
-        // WhatsApp Preparation
+        // --- ONE-CLICK BULLETPROOF LOGIC ---
+        
+        // 1. Prepare WhatsApp Message
         let whatsappMessage = `📦 *NEW ORDER - HAYYAT PAPER STORE*\n\n`;
         whatsappMessage += `Order #${orderId}\n`;
         whatsappMessage += `Customer: ${name}\n`;
-        whatsappMessage += `📋 *VIEW ORDER DETAILS & TRACKING:*\n${invoiceLink}\n\n`;
+        whatsappMessage += `Phone: ${phone}\n\n`;
+        whatsappMessage += `📋 *VIEW ORDER DETAILS & TRACKING:*\n`;
+        whatsappMessage += `${invoiceLink}\n\n`;
         whatsappMessage += `⚠️ *DO NOT EDIT THIS LINK*`;
 
         let whatsappNumber = ((shipping === "open" || shipping === "bundle") && 
                              document.querySelector('input[name="payment"]:checked').value === "bank") 
                              ? "923046470666" : "923036470666";
 
-        // Redirect to WhatsApp
-        window.location.href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
-        // Background Saving
-        const orderData = { orderId, invoiceLink, customerName: name, customerPhone: phone, customerEmail: email || '', shippingMethod: shipping, paymentMethod: document.querySelector('input[name="payment"]:checked').value, deliveryAddress: address || '', orderItems, totalAmount: total, totalWeight: Math.round(totalWeight), subtotal: total - deliveryCharges, deliveryCharges };
+        // 2. OPEN WHATSAPP IMMEDIATELY (Before any 'await' calls to satisfy Safari)
+        window.location.href = whatsappUrl;
+
+        // 3. START SAVING IN BACKGROUND (We don't 'await' here so the redirect isn't blocked)
         saveOrderToGoogleSheets(orderData).catch(err => console.error('Sheet Save Error:', err));
 
-        // Cleanup
+        const emailData = {
+            customerName: name,
+            customerPhone: phone,
+            customerEmail: email || 'Not provided',
+            shippingMethod: shipping === "self" ? "Self Pickup" : (shipping === "open" ? "Delivery - Open" : "Delivery - Bundle"),
+            paymentMethod: document.querySelector('input[name="payment"]:checked').value === "bank" ? "Bank Transfer" : "Pay at Shop",
+            deliveryAddress: address || 'Not applicable',
+            orderSummary: orderSummary,
+            orderTotal: total,
+            orderWeight: Math.round(totalWeight)
+        };
+
+        fetch('https://script.google.com/macros/s/AKfycbw-h33gLXwPGRdnlURFncIhf3W8AS55ikyJN8Db4IZaydA4BwXxyG4gkSghUlluOznFWg/exec', {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(emailData)
+        }).catch(err => console.error('Email Backup Error:', err));
+
+        // 4. UI CLEANUP
         setTimeout(() => {
             closeCheckout();
             cart = {};
@@ -3202,11 +3291,12 @@ async function placeOrder() {
 
     } catch (error) {
         console.error('Order error:', error);
-        alert('An error occurred while verifying prices. Please try again.');
+        alert('Error saving order. Please try again or contact support.');
         btn.disabled = false;
         btn.innerHTML = 'Place Order via WhatsApp';
     }
 }
+
 // Function to save order to Google Sheets
 async function saveOrderToGoogleSheets(orderData) {
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbysHbzMzacuCiZp16PJO5Gnx8kN2asM2Te4yDavvSdXRUN2jfUwRvc-LCjRvKPGXbsG/exec';
@@ -3292,26 +3382,6 @@ function updatePaymentButtons() {
     }
 }
 
-function findFreshItem(rows, cartItem) {
-    // We search through ALL rows to find the one that matches Name, L, W, and GSM
-    return rows.find(row => {
-        const sheetName   = String(row[3] || "").trim().toUpperCase(); // Column D
-        const sheetLength = String(row[6] || "").trim();               // Column G
-        const sheetWidth  = String(row[7] || "").trim();               // Column H
-        const sheetGSM    = String(row[8] || "").trim();               // Column I
-
-        const cartName    = String(cartItem.name || "").trim().toUpperCase();
-        const cartLength  = String(cartItem.length || "").trim();
-        const cartWidth   = String(cartItem.width || "").trim();
-        const cartGSM     = String(cartItem.gsm || "").trim();
-
-        return sheetName === cartName && 
-               sheetLength === cartLength && 
-               sheetWidth === cartWidth && 
-               sheetGSM === cartGSM;
-    });
-}
-	
 document.head.appendChild(style)
 </script>
 </body>
