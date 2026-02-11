@@ -3400,52 +3400,43 @@ function updatePaymentButtons() {
 }
 
 document.head.appendChild(style)
-	// ===== INACTIVITY AUTO-REFRESH (TEST: 1 minute) =====
-// Track all user activity
-document.addEventListener('click', () => lastUserActivity = Date.now());
-document.addEventListener('keypress', () => lastUserActivity = Date.now());
-document.addEventListener('mousemove', () => lastUserActivity = Date.now());
-document.addEventListener('scroll', () => lastUserActivity = Date.now());
-document.addEventListener('touchstart', () => lastUserActivity = Date.now()); // Mobile
-document.addEventListener('touchmove', () => lastUserActivity = Date.now()); // Mobile
+	// ===== SIMPLE AUTO-REFRESH =====
+// Global variable accessible everywhere
+window.lastUserActivity = Date.now();
 
-// Check every 10 seconds for testing
-setInterval(() => {
-    const secondsInactive = (Date.now() - lastUserActivity) / 1000;
+// Track ALL activity
+function updateActivity() {
+    window.lastUserActivity = Date.now();
+}
+
+document.addEventListener('click', updateActivity);
+document.addEventListener('keypress', updateActivity);
+document.addEventListener('mousemove', updateActivity);
+document.addEventListener('scroll', updateActivity);
+document.addEventListener('touchstart', updateActivity);
+document.addEventListener('touchmove', updateActivity);
+
+// Check every 10 seconds
+setInterval(function() {
+    const secondsInactive = (Date.now() - window.lastUserActivity) / 1000;
+    console.log(`Inactive for: ${secondsInactive.toFixed(1)} seconds`);
     
-    // Refresh if inactive for 1+ minute (TESTING)
-    if (secondsInactive >= 60) { // 60 seconds = 1 minute
-        console.log('TEST: Auto-refresh - Tab inactive for 1+ minute');
+    if (secondsInactive >= 60) { // 1 minute
+        console.log('Auto-refreshing due to inactivity');
         location.reload();
     }
-}, 10000); // Check every 10 seconds
+}, 10000);
 
-// Also refresh when returning to tab after 1+ minute away
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) { // Tab became visible
-        const secondsInactive = (Date.now() - lastUserActivity) / 1000;
-        if (secondsInactive >= 60) { // 60 seconds = 1 minute
-            console.log('TEST: Auto-refresh - Returning to inactive tab');
-            setTimeout(() => location.reload(), 1000); // 1 second delay
+// Also check when returning to tab
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        const secondsInactive = (Date.now() - window.lastUserActivity) / 1000;
+        console.log(`Returned to tab after ${secondsInactive.toFixed(1)} seconds`);
+        if (secondsInactive >= 60) {
+            setTimeout(() => location.reload(), 1000);
         }
     }
 });
-
-// Show countdown for testing
-let countdownShown = false;
-setInterval(() => {
-    const secondsInactive = (Date.now() - lastUserActivity) / 1000;
-    const secondsLeft = 60 - secondsInactive;
-    
-    if (secondsLeft <= 10 && secondsLeft > 0 && !countdownShown) {
-        countdownShown = true;
-        console.log(`TEST: Refreshing in ${Math.round(secondsLeft)} seconds...`);
-    }
-    
-    if (secondsInactive < 10) {
-        countdownShown = false; // Reset for next cycle
-    }
-}, 5000);
 </script>
 </body>
 </html>
