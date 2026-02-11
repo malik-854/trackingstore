@@ -1725,6 +1725,7 @@ let globalProducts = {};
 let lunrIndex = null;
 let currentShippingMethod = 'self';
 let usingFallbackData = false;
+let lastUserActivity = Date.now(); // ADD THIS LINE HERE
 
 // Payment method handling
 function setupPaymentListeners() {
@@ -1771,6 +1772,7 @@ if (bankRadio) {
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', function() {
+	lastUserActivity = Date.now(); // ADD THIS LINE
     fetchProducts();
     setupShippingListeners();
 setupPaymentListeners();
@@ -3399,8 +3401,6 @@ function updatePaymentButtons() {
 
 document.head.appendChild(style)
 	// ===== INACTIVITY AUTO-REFRESH (TEST: 1 minute) =====
-let lastUserActivity = Date.now();
-
 // Track all user activity
 document.addEventListener('click', () => lastUserActivity = Date.now());
 document.addEventListener('keypress', () => lastUserActivity = Date.now());
