@@ -5,17 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hayyat Paper Store</title>
 <link rel="icon" type="image/png" href="favicon.png">
-
-<!-- ANTI-CACHING META TAGS -->
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-H2V1WJFV61"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
+
   gtag('config', 'G-H2V1WJFV61');
 </script>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
@@ -31,7 +26,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lunr/lunr.js"></script>
 <style>
-/* --- ALL YOUR EXISTING CSS STYLES HERE --- */
+
+/* --- BASE & TYPOGRAPHY --- */
 :root {
     --primary: #004c99;
     --primary-dark: #003366;
@@ -67,7 +63,75 @@ h1, h2, h3 {
     transition: color 0.3s ease;
 }
 h1:hover, h2:hover, h3:hover {
-    color: #ff6b00;
+    color: #ff6b00; /* Added this block */
+}
+/* Option 3: Background highlight */
+/* Option 3: Background highlight - Separate colors */
+h1.highlight-bg {
+    background-color: #ff4444; /* Red for h1 */
+    color: #ffffff;
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+h2.highlight-bg {
+    background: linear-gradient(135deg, #076ead, #7b8587);
+    color: #fdcb6e;
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 
+        0 3px 20px rgba(0, 0, 0, 0.2),
+        0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: 1200;
+    font-size: 1.1rem;
+    letter-spacing: 0.1px;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid #636e72;
+    margin: 15px 0px;
+    min-width: 180px;
+    text-align: center;
+}
+
+/* Accent line */
+h2.highlight-bg::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10%;
+    height: 80%;
+    width: 4px;
+    background: linear-gradient(to bottom, #fdcb6e, #e17055);
+    border-radius: 2px;
+}
+
+h2.highlight-bg:hover {
+    transform: translateY(-3px);
+    box-shadow: 
+        0 6px 25px rgba(0, 0, 0, 0.3),
+        0 3px 8px rgba(0, 0, 0, 0.15);
+    border-color: #fdcb6e;
+    color: #fdcb6e;
+}
+/* Add subtle pulse animation */
+@keyframes subtle-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+h2.highlight-bg {
+    animation: subtle-pulse 3s ease-in-out infinite;
+}
+
+h3.highlight-bg {
+    background-color: #2196F3; /* Blue for h3 */
+    color: #ffffff;
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 h1 { font-size: 2.5rem; }
 h2 { font-size: 1.8rem; margin-top: 25px; }
@@ -158,12 +222,14 @@ h3 { font-size: 1.3rem; }
     border: 3px solid rgba(255, 255, 255, 0.3);
 }
 
+/* Animated gradient background */
 @keyframes gradient-shift {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
 
+/* Optional: Add floating particles effect */
 .announcement-container::before {
     content: '';
     position: absolute;
@@ -186,11 +252,23 @@ h3 { font-size: 1.3rem; }
     100% { background-position: 100px 100px, 50px 50px, 75px 75px; }
 }
 
+/* Ensure text stays on top */
 .announcement-container > * {
     position: relative;
     z-index: 1;
 }
 
+/* Optional: Add a subtle pulse animation */
+@keyframes subtle-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.01); }
+}
+
+.announcement-container {
+    animation: 
+        gradient-shift 3s ease infinite,
+        subtle-pulse 4s ease-in-out infinite;
+}
 .announcement-wrapper {
     width: 100%;
     overflow: hidden;
@@ -200,7 +278,7 @@ h3 { font-size: 1.3rem; }
 .announcement-track {
     display: inline-flex;
     white-space: nowrap;
-    padding-left: 100%;
+    padding-left: 100%; /* Start off-screen to the right */
     animation: scrollAnnouncements 20s linear infinite;
     will-change: transform;
 }
@@ -227,46 +305,54 @@ h3 { font-size: 1.3rem; }
     animation-play-state: paused;
 }
 
+/* Keyframes for smooth continuous scroll */
 @keyframes scrollAnnouncements {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
 }
 
+/* Mobile adjustments */
 @media (max-width: 768px) {
     .announcement-container {
         margin: 8px 0 15px 0;
         padding: 10px 0;
         min-height: 36px;
     }
+    
     .announcement-item {
         padding: 0 30px;
         font-size: 1.85rem;
     }
+    
     .announcement-separator {
         margin: 0 15px;
     }
+    
     .announcement-track {
         animation: scrollAnnouncements 30s linear infinite;
     }
 }
-
-/* --- PRODUCT GRID --- */
+/* --- PROFESSIONAL & CRISP PRODUCT GRID --- */
 :root {
-    --primary: #111827;
-    --accent: #2563eb;
+    --primary: #111827;        /* Deep Slate/Black */
+    --accent: #2563eb;         /* Clean Blue for actions */
     --text-main: #1f2937;
     --text-muted: #6b7280;
     --border-color: #e5e7eb;
     --card-bg: #ffffff;
     --input-bg: #f9fafb;
-    --radius-sm: 4px;
+    --radius-sm: 4px;          /* Crisper, tighter corners */
 }
 
 .product-grid { 
     display: grid; 
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1px;
-    background: var(--border-color);
+    gap: 1px;                  /* Creates a clean "grid line" look */
+    background: var(--border-color); /* The gap acts as the border */
     border: 1px solid var(--border-color);
     max-width: 1200px;
     margin: 0 auto;
@@ -280,23 +366,24 @@ h3 { font-size: 1.3rem; }
     height: 100%;
     position: relative;
     transition: background 0.2s ease;
-    animation: slideIn 0.3s ease-out;
 }
 
 .product-card:hover {
     background: #fcfcfc;
-    z-index: 1;
-    outline: 1px solid var(--accent);
+    z-index: 1; /* Ensures slight overlap or shadow stays on top */
+    outline: 1px solid var(--accent); /* Crisp highlight instead of heavy shadow */
 }
 
+/* --- IMAGE SECTION --- */
 .product-card img { 
     width: 100%; 
     height: 180px; 
     object-fit: contain; 
     margin-bottom: 20px; 
-    mix-blend-mode: multiply;
+    mix-blend-mode: multiply; /* Blends white backgrounds perfectly */
 }
 
+/* --- PRODUCT DETAILS --- */
 .product-info {
     flex-grow: 1;
     display: flex;
@@ -328,6 +415,7 @@ h3 { font-size: 1.3rem; }
     margin-bottom: 20px;
 }
 
+/* --- VARIATIONS (CRISP TAGS) --- */
 .variation-grid { 
     display: flex; 
     flex-wrap: wrap; 
@@ -344,7 +432,7 @@ h3 { font-size: 1.3rem; }
     font-size: 0.75rem;
     font-weight: 500;
     color: var(--text-main);
-    text-transform: uppercase;
+    text-transform: uppercase; /* Professional look */
     letter-spacing: 0.03em;
 }
 
@@ -354,6 +442,7 @@ h3 { font-size: 1.3rem; }
     border-color: var(--primary); 
 }
 
+/* --- ACTION ROW --- */
 .qty-row { 
     display: flex; 
     gap: 8px; 
@@ -394,7 +483,7 @@ h3 { font-size: 1.3rem; }
 .btn-cart:hover {
     background-color: var(--primary);
 }
-
+/* --- CART BUTTON (FLOATING) --- */
 #view-cart-btn {
     position: fixed;
     top: 120px;
@@ -414,7 +503,6 @@ h3 { font-size: 1.3rem; }
     justify-content: center;
     gap: 8px;
 }
-
 #view-cart-btn .cart-count {
     background: white;
     color: var(--secondary);
@@ -428,6 +516,7 @@ h3 { font-size: 1.3rem; }
     font-weight: bold;
 }
 
+/* --- CART CONTAINER (MOBILE-FIRST) --- */
 #cart-container {
     position: fixed;
     top: 0;
@@ -443,11 +532,9 @@ h3 { font-size: 1.3rem; }
     flex-direction: column;
     overflow: hidden;
 }
-
 #cart-container.active {
     right: 0;
 }
-
 .cart-header {
     display: flex;
     justify-content: space-between;
@@ -457,12 +544,10 @@ h3 { font-size: 1.3rem; }
     background: var(--primary);
     color: white;
 }
-
 .cart-header h3 {
     margin: 0;
     color: white;
 }
-
 #cart-close-btn {
     background: rgba(255, 255, 255, 0.2);
     color: white;
@@ -476,17 +561,14 @@ h3 { font-size: 1.3rem; }
     align-items: center;
     justify-content: center;
 }
-
 .cart-content {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
 }
-
 #cart-items {
     margin-bottom: 20px;
 }
-
 .cart-item {
     border-bottom: 1px dashed var(--medium-gray);
     padding: 15px 0;
@@ -495,22 +577,18 @@ h3 { font-size: 1.3rem; }
     align-items: flex-start;
     font-size: 0.95em;
 }
-
 .cart-item:last-child { 
     border-bottom: none; 
 }
-
 .cart-item-details {
     flex: 1;
     padding-right: 10px;
 }
-
 .cart-item-actions {
     display: flex;
     align-items: center;
     gap: 10px;
 }
-
 .remove-btn { 
     background: var(--danger); 
     color: white; 
@@ -521,13 +599,11 @@ h3 { font-size: 1.3rem; }
     font-size: 0.85em;
     white-space: nowrap;
 }
-
 .cart-footer {
     padding: 20px;
     border-top: 1px solid var(--medium-gray);
     background: #f9f9f9;
 }
-
 .cart-total { 
     font-weight: 700; 
     margin-bottom: 20px; 
@@ -535,11 +611,10 @@ h3 { font-size: 1.3rem; }
     color: var(--primary);
     text-align: center;
 }
-
 .checkout-btn {
     width: 100%;
     padding: 16px;
-    font-family: 'Roboto', sans-serif !important;
+font-family: 'Roboto', sans-serif !important;
     background: var(--primary); 
     color: #fff;
     border: none;
@@ -549,11 +624,11 @@ h3 { font-size: 1.3rem; }
     font-weight: 700;
     transition: background-color 0.2s;
 }
-
 .checkout-btn:hover {
     background-color: var(--primary-dark);
 }
 
+/* --- CHECKOUT MODAL --- */
 #checkout-modal {
     position: fixed;
     top: 0;
@@ -567,11 +642,9 @@ h3 { font-size: 1.3rem; }
     align-items: center;
     padding: 20px;
 }
-
 #checkout-modal.active {
     display: flex;
 }
-
 #checkout-modal > div {
     background: #fff;
     width: 100%;
@@ -582,7 +655,6 @@ h3 { font-size: 1.3rem; }
     overflow-y: auto;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
-
 .checkout-header {
     display: flex;
     justify-content: space-between;
@@ -591,7 +663,6 @@ h3 { font-size: 1.3rem; }
     padding-bottom: 15px;
     border-bottom: 2px solid var(--primary);
 }
-
 .checkout-close-btn {
     background: none;
     border: none;
@@ -599,11 +670,9 @@ h3 { font-size: 1.3rem; }
     cursor: pointer;
     color: var(--dark-gray);
 }
-
 .input-group {
     margin-bottom: 20px;
 }
-
 .input-group label {
     display: block;
     font-weight: 700;
@@ -611,7 +680,6 @@ h3 { font-size: 1.3rem; }
     color: #555;
     font-size: 0.95em;
 }
-
 #checkout-modal input, #checkout-modal #delivery-address {
     width: 100%;
     padding: 14px;
@@ -621,21 +689,19 @@ h3 { font-size: 1.3rem; }
     font-size: 1em;
     transition: border-color 0.2s;
 }
-
-#checkout-modal input:focus, #checkout-modal #delivery-address:focus {
+#checkout-modal input:focus {
     border-color: var(--primary);
     outline: none;
     box-shadow: 0 0 0 2px rgba(0, 76, 153, 0.1);
 }
 
-.shipping-options, .payment-options {
+/* Shipping Buttons */
+.shipping-options {
     display: flex;
     gap: 10px;
     margin-top: 15px;
-    margin-bottom: 20px;
 }
-
-.shipping-option-btn, .payment-option-btn {
+.shipping-option-btn {
     flex: 1;
     padding: 15px 10px;
     border: 2px solid var(--medium-gray);
@@ -646,54 +712,67 @@ h3 { font-size: 1.3rem; }
     background: #fff;
     position: relative;
 }
-
-.shipping-option-btn input[type="radio"], .payment-option-btn input[type="radio"] {
+.shipping-option-btn input[type="radio"] {
     position: absolute;
     opacity: 0;
     width: 0;
     height: 0;
 }
-
-.shipping-option-btn.active, .payment-option-btn.active {
+.shipping-option-btn.active {
     border-color: var(--secondary);
     background-color: rgba(40, 167, 69, 0.1);
     color: var(--secondary);
 }
-
-.shipping-option-btn span, .payment-option-btn span {
+.shipping-option-btn span {
     display: block;
     font-size: 0.85em;
     margin-top: 5px;
     font-weight: 500;
 }
 
-.checkout-two-column {
+/* Payment Options - Same style as shipping */
+.payment-options {
     display: flex;
-    flex-wrap: wrap;
-    gap: 30px;
-    margin-top: 10px;
+    gap: 10px;
+    margin-top: 15px;
+    margin-bottom: 20px;
 }
-
-.checkout-left {
+.payment-option-btn {
     flex: 1;
-    min-width: 300px;
+    padding: 15px 10px;
+    border: 2px solid var(--medium-gray);
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fff;
+    position: relative;
+}
+.payment-option-btn input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.payment-option-btn.active {
+    border-color: var(--secondary);
+    background-color: rgba(40, 167, 69, 0.1);
+    color: var(--secondary);
+}
+.payment-option-btn span {
+    display: block;
+    font-size: 0.85em;
+    margin-top: 5px;
+    font-weight: 500;
 }
 
-.checkout-right {
-    flex: 1;
-    min-width: 300px;
-    display: flex;
-    flex-direction: column;
-}
-
+/* Order Summary */
 #checkout-summary-box {
     background: #f7f7f7;
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 20px;
-    flex-grow: 1;
 }
-
 #checkout-summary-box h4 {
     margin-top: 0;
     border-bottom: 1px solid #ddd;
@@ -701,14 +780,12 @@ h3 { font-size: 1.3rem; }
     margin-bottom: 15px;
     font-size: 1.2rem;
 }
-
 .summary-line {
     display: flex;
     justify-content: space-between;
     padding: 8px 0;
     font-size: 0.95em;
 }
-
 .summary-total {
     border-top: 2px solid #ddd;
     margin-top: 15px;
@@ -718,6 +795,7 @@ h3 { font-size: 1.3rem; }
     color: var(--primary);
 }
 
+/* WhatsApp Button */
 .whatsapp-btn {
     display: flex;
     align-items: center;
@@ -734,16 +812,15 @@ h3 { font-size: 1.3rem; }
     transition: background-color 0.2s;
     width: 100%;
 }
-
 .whatsapp-btn:hover {
     background-color: #1DA851;
 }
-
 .whatsapp-icon {
     margin-right: 10px;
     font-size: 1.2em;
 }
 
+/* Cancel Button */
 .modal-btn-close {
     background-color: #6c757d;
     color: white;
@@ -756,21 +833,22 @@ h3 { font-size: 1.3rem; }
     width: 100%;
     transition: background-color 0.2s;
 }
-
 .modal-btn-close:hover {
     background-color: #5a6268;
 }
 
+/* Brand button specific styling */
 .variation-btn.brand-btn {
-    min-width: 80px;
-    white-space: normal;
-    height: auto;
-    padding: 8px 6px;
-    line-height: 1.2;
-    font-size: 0.8em;
-    word-break: break-word;
+    min-width: 80px;        /* Minimum width for brand buttons */
+    white-space: normal;    /* Allow text to wrap to next line */
+    height: auto;          /* Allow height to adjust */
+    padding: 8px 6px;      /* Adjust padding for wrapped text */
+    line-height: 1.2;      /* Tighter line spacing */
+    font-size: 0.8em;      /* Slightly smaller text */
+    word-break: break-word; /* Break long words if needed */
 }
 
+/* --- PRODUCT BADGES --- */
 .product-badge {
     position: absolute;
     top: 10px;
@@ -804,6 +882,12 @@ h3 { font-size: 1.3rem; }
     100% { transform: scale(1); }
 }
 
+/* Product card needs relative positioning for absolute badges */
+.product-card {
+    position: relative; /* Add this to existing .product-card */
+}
+
+/* Badges on buttons */
 .badge-on-btn {
     position: absolute;
     top: -8px;
@@ -814,109 +898,298 @@ h3 { font-size: 1.3rem; }
     font-weight: 900;
     z-index: 20;
     box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-    animation: bounce 0.5s infinite;
+animation: bounce 0.5s infinite;
 }
 
+/* Brand button needs relative positioning */
+.variation-btn.brand-btn {
+    position: relative; /* Add this */
+    /* ... rest of your existing brand-btn styles ... */
+}
+
+/* ================================
+   MOBILE OPTIMIZATION - PRODUCT GRID
+   ================================ */
+
+/* Global variables for consistency */
+:root {
+  --font-xs: 0.7rem;
+  --font-sm: 0.75rem;
+  --font-md: 0.9rem;
+  --font-lg: 1.3rem;
+  --font-xl: 1.4rem;
+  --gap-xs: 4px;
+  --gap-sm: 6px;
+  --gap-md: 10px;
+  --gap-lg: 12px;
+}
+
+/* Shared rules */
+.category-products,
+.category-header {
+  grid-column: 1 / -1;
+  text-align: center;     /* center for balance */
+  line-height: 1.1;       /* tighter line height for wrapping */
+  white-space: normal;    /* allow wrapping if needed */
+  word-break: break-word; /* break long words gracefully */
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Prevent sideways scroll globally */
+body {
+  overflow-x: visible;
+}
+
+/* --- TABLET & MOBILE (≤768px) --- */
 @media (max-width: 768px) {
-    .header {
-        padding: 15px 10px 10px;
+  /* Header adjustments */
+  .header {
+    padding: 15px 10px 10px;
+  }
+
+  .header h1 {
+    font-size: clamp(1.3rem, 4vw, 1.8rem);
+    margin-bottom: 5px;
+  }
+
+  .header p {
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+
+  /* Product grid */
+  #product-list.product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gap-lg);
+    padding: 15px 10px;
+    box-sizing: border-box;
+    min-width: min-content;
+  }
+
+  .category-products {
+    display: block;
+  }
+
+  .product-card {
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+    height: auto;
+    box-sizing: border-box;
+  }
+
+  .product-card img {
+    max-height: 80px;
+    width: 100%;
+    object-fit: contain;
+  }
+
+  .product-card h3 {
+    font-size: 0.95rem;
+    line-height: 1.2;
+    margin: 3px 0 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .price {
+    font-size: 1.1rem;
+    margin: 3px 0;
+  }
+
+  .details {
+    font-size: var(--font-sm);
+    line-height: 1.2;
+    margin-bottom: 5px;
+  }
+
+  /* Variation buttons */
+  .variation-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-xs);
+    margin-bottom: 8px;
+  }
+
+  .variation-btn:not(.brand-btn) {
+    padding: 6px 8px;
+    font-size: var(--font-sm);
+    min-height: 36px;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .variation-btn.brand-btn {
+    min-width: 60px;
+    font-size: var(--font-sm);
+    padding: 6px 4px;
+  }
+
+  .variation-grid.size-grid .variation-btn,
+  .variation-grid:first-of-type .variation-btn {
+    flex: 1 1 48%;
+  }
+
+  /* Quantity & cart */
+  .qty-row {
+    gap: var(--gap-sm);
+    margin-top: 8px;
+  }
+
+  .qty-input {
+    width: 60px;
+  }
+
+  .qty-row input {
+    padding: 8px;
+    font-size: 0.9rem;
+    height: 36px;
+    box-sizing: border-box;
+  }
+
+  .btn-cart {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    height: 36px;
+    box-sizing: border-box;
+  }
+
+  /* Category headers */
+  .category-header {
+    font-size: clamp(1.1rem, 3.5vw, var(--font-xl));
+    margin-top: 20px;
+    margin-bottom: 8px;
+  }
+
+  /* Cart button */
+  #view-cart-btn {
+    padding: 3px 0;
+    font-size: 0.65rem;
+    top: 65px;
+    right: 10px;
+  }
+}
+
+/* --- SMALL PHONES (≤480px) --- */
+@media (max-width: 480px) {
+  #product-list.product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gap-md);
+    padding: 12px 8px;
+    box-sizing: border-box;
+    min-width: min-content;
+  }
+
+  .category-products {
+    display: block;
+  }
+
+  .product-card {
+    padding: 10px;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .product-card img {
+    max-height: 80px;
+    width: 100%;
+    object-fit: contain;
+  }
+
+  .product-card h3 {
+    font-size: var(--font-md);
+  }
+
+  .price {
+    font-size: 1rem;
+  }
+
+  .details {
+    display: block;
+    font-size: var(--font-xs);
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  /* Variation buttons */
+  .variation-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-bottom: 6px;
+  }
+
+  .variation-btn:not(.brand-btn) {
+    padding: 5px 6px;
+    font-size: var(--font-xs);
+    min-height: 34px;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .variation-btn.brand-btn {
+    min-width: 60px;
+    font-size: var(--font-sm);
+    padding: 6px 4px;
+  }
+
+  .variation-grid.size-grid .variation-btn,
+  .variation-grid:first-of-type .variation-btn {
+    flex: 1 1 48%;
+  }
+
+  .btn-cart {
+    font-size: 0.8rem;
+    padding: 6px 8px;
+    height: 34px;
+    box-sizing: border-box;
+  }
+
+  .qty-row input {
+    padding: 6px;
+    font-size: 0.85rem;
+    height: 34px;
+    box-sizing: border-box;
+  }
+
+  /* Category headers */
+  .category-header {
+    font-size: clamp(1rem, 3.5vw, var(--font-lg));
+    margin-top: 15px;
+    margin-bottom: 6px;
+  }
+
+  #view-cart-btn {
+    padding: 3px 0;
+    font-size: 0.65rem;
+    top: 120px;
+    right: 30px;
+  }
+#view-cart-btn .cart-text {
+        display: none; /* Hide text on mobile, show only icon */
     }
-    .header h1 {
-        font-size: clamp(1.3rem, 4vw, 1.8rem);
-        margin-bottom: 5px;
-    }
-    .header p {
-        font-size: 1rem;
-        margin-bottom: 10px;
-    }
-    #product-list.product-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-        padding: 15px 10px;
-    }
-    .product-card {
-        padding: 12px;
-    }
-    .product-card img {
-        max-height: 80px;
-    }
-    .product-card h3 {
-        font-size: 0.95rem;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    .price {
-        font-size: 1.1rem;
-    }
-    .details {
-        font-size: 0.75rem;
-    }
-    .variation-btn:not(.brand-btn) {
-        padding: 6px 8px;
-        font-size: 0.75rem;
-    }
-    .variation-btn.brand-btn {
-        min-width: 60px;
-        font-size: 0.75rem;
-    }
-    .qty-row input {
-        padding: 8px;
-    }
-    .btn-cart {
-        padding: 8px 10px;
-        font-size: 0.85rem;
-    }
-    #view-cart-btn {
-        padding: 3px 0;
-        font-size: 0.65rem;
-        top: 65px;
-        right: 10px;
-    }
-    #view-cart-btn .cart-text {
-        display: none;
-    }
+    
     #view-cart-btn .cart-icon {
         font-size: 1.2rem;
     }
 }
-
-@media (max-width: 480px) {
-    #product-list.product-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        padding: 12px 8px;
-    }
-    .product-card {
-        padding: 10px;
-    }
-    .product-card img {
-        max-height: 80px;
-    }
-    .product-card h3 {
-        font-size: 0.9rem;
-    }
-    .price {
-        font-size: 1rem;
-    }
-    .details {
-        font-size: 0.7rem;
-    }
-    .variation-btn:not(.brand-btn) {
-        padding: 5px 6px;
-        font-size: 0.7rem;
-    }
-    .btn-cart {
-        font-size: 0.8rem;
-        padding: 6px 8px;
-    }
-    .qty-row input {
-        padding: 6px;
-        font-size: 0.85rem;
-    }
-}
-
+/* --- TABLET (PORTRAIT) --- */
 @media (min-width: 769px) and (max-width: 1024px) {
     #product-list.product-grid {
         grid-template-columns: repeat(3, 1fr) !important;
@@ -925,21 +1198,25 @@ h3 { font-size: 1.3rem; }
     }
 }
 
+/* --- LANDSCAPE ORIENTATION --- */
 @media (max-width: 768px) and (orientation: landscape) {
     #product-list.product-grid {
         grid-template-columns: repeat(3, 1fr) !important;
         gap: 10px !important;
         padding: 10px !important;
     }
+    
     .product-card img {
         height: 80px !important;
     }
+    
     .product-card h3 {
         font-size: 0.85rem !important;
         -webkit-line-clamp: 1 !important;
     }
 }
 
+/* --- UTILITY CLASSES --- */
 .no-results {
     text-align: center;
     padding: 50px 20px;
@@ -954,30 +1231,9 @@ h3 { font-size: 1.3rem; }
     margin-bottom: 10px;
     padding-bottom: 10px;
     border-bottom: 2px solid var(--primary);
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
-.category-header::after {
-    content: "▶";
-    font-size: 0.8em;
-    margin-left: 10px;
-    transition: transform 0.3s;
-}
-
-.category-header.expanded::after {
-    content: "▼";
-    transform: rotate(90deg);
-}
-
-.category-products {
-    transition: max-height 0.3s ease-out;
-    overflow: hidden;
-    max-height: 0;
-}
-
+/* --- ANIMATIONS --- */
 @keyframes slideIn {
     from {
         opacity: 0;
@@ -989,6 +1245,11 @@ h3 { font-size: 1.3rem; }
     }
 }
 
+.product-card {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* --- SCROLLBAR STYLING --- */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -1007,100 +1268,87 @@ h3 { font-size: 1.3rem; }
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary-dark);
 }
+
+/* Collapsible category arrows */
+.category-header {
+    cursor: pointer; /* Makes it clickable */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.category-header::after {
+    content: "▶"; /* Closed state arrow */
+    font-size: 0.8em;
+    margin-left: 10px;
+    transition: transform 0.3s;
+}
+
+.category-header.expanded::after {
+    content: "▼"; /* Open state arrow */
+    transform: rotate(90deg);
+}
+
+.category-products {
+    transition: max-height 0.3s ease-out;
+    overflow: hidden;
+    max-height: 0;
+}
+
+/* ===== TWO-COLUMN CHECKOUT LAYOUT ===== */
+.checkout-two-column {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 10px;
+}
+
+.checkout-left {
+    flex: 1;
+    min-width: 300px;
+}
+
+.checkout-right {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Adjust summary box for new layout */
+#checkout-summary-box {
+    background: #f7f7f7;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+/* Ensure buttons fill width in right column */
+.checkout-right .whatsapp-btn,
+.checkout-right .modal-btn-close {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .checkout-two-column {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .checkout-left,
+    .checkout-right {
+        min-width: 100%;
+    }
+}
+
 </style>
 </head>
 <body>
 
-<!-- Anti-Caching Script - Runs Immediately -->
-<script>
-// ============================================
-// ANTI-CACHING AND VERSION CONTROL SYSTEM
-// ============================================
-
-// IMPORTANT: UPDATE THIS VERSION NUMBER WHENEVER PRICES CHANGE
-const APP_VERSION = '1.0.1'; 
-const VERSION_CHECK_KEY = 'hayyat_store_version';
-
-// Clear all service workers immediately
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(registrations => {
-        for (let registration of registrations) {
-            registration.unregister();
-            console.log('Service worker unregistered');
-        }
-    });
-}
-
-// Version check and cache clearing function
-(function checkVersionAndClearCache() {
-    try {
-        const storedVersion = localStorage.getItem(VERSION_CHECK_KEY);
-        
-        // If version mismatch, clear everything
-        if (storedVersion !== APP_VERSION) {
-            console.log('Version mismatch: Clearing all caches');
-            
-            // Clear cart data
-            sessionStorage.removeItem('hayyat_cart');
-            localStorage.removeItem('hayyat_cart');
-            
-            // Clear all localStorage
-            const keysToRemove = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && key.includes('hayyat')) {
-                    keysToRemove.push(key);
-                }
-            }
-            keysToRemove.forEach(key => localStorage.removeItem(key));
-            
-            // Set new version
-            localStorage.setItem(VERSION_CHECK_KEY, APP_VERSION);
-            
-            // Clear browser cache if possible
-            if ('caches' in window) {
-                caches.keys().then(names => {
-                    names.forEach(name => {
-                        caches.delete(name);
-                        console.log('Cache deleted:', name);
-                    });
-                });
-            }
-            
-            // If this is an old tab, force reload
-            if (storedVersion) {
-                alert('⚠️ New prices and products are available!\n\nThis page will now refresh to show the latest updates.');
-                window.location.reload(true);
-            }
-        }
-    } catch (e) {
-        console.error('Version check error:', e);
-    }
-})();
-
-// Override fetch to add cache-busting
-const originalFetch = window.fetch;
-window.fetch = function(url, options = {}) {
-    // Add cache-busting parameter to Google Sheets requests
-    if (typeof url === 'string' && url.includes('sheets.googleapis.com')) {
-        const cacheBuster = new Date().getTime();
-        const separator = url.includes('?') ? '&' : '?';
-        url = `${url}${separator}_cb=${cacheBuster}`;
-        
-        // Add no-cache headers
-        options.headers = {
-            ...options.headers,
-            'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
-            'Pragma': 'no-cache',
-            'Expires': '0',
-            'X-Requested-With': 'XMLHttpRequest'
-        };
-    }
-    return originalFetch.call(this, url, options);
-};
-</script>
-
-<!-- Group Banner -->
+<!-- Add this RIGHT AFTER <body> tag -->
 <div id="groupBanner" style="
     background: linear-gradient(135deg, #ff8400, #ff8400);
     color: white;
@@ -1118,7 +1366,9 @@ window.fetch = function(url, options = {}) {
         gap: 15px;
         text-align: center;
     ">
+        <!-- Logo and Text Container -->
         <div style="display: flex; align-items: center; gap: 15px; flex: 1; min-width: 250px; justify-content: center;">
+            <!-- YOUR LOGGO HERE -->
             <img src="https://i.postimg.cc/7LX0nR3S/Hayyat-Luxury-Apartments-Logo.png" 
                  alt="Hayyat Group Logo"
                  style="
@@ -1130,6 +1380,7 @@ window.fetch = function(url, options = {}) {
                     padding: 3px;
                     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
                  ">
+            
             <div>
                 <div style="font-weight: bold; font-size: 1.05em; line-height: 1.2;">
                     A Hayyat Group Company
@@ -1139,6 +1390,8 @@ window.fetch = function(url, options = {}) {
                 </div>
             </div>
         </div>
+        
+        <!-- Visit Button -->
         <a href="https://hayyatgroup.com" 
            target="_blank"
            style="
@@ -1158,6 +1411,8 @@ window.fetch = function(url, options = {}) {
             Visit HayyatGroup.com
         </a>
     </div>
+    
+    <!-- Mobile CSS -->
     <style>
         @media (max-width: 768px) {
             #groupBanner > div {
@@ -1166,10 +1421,12 @@ window.fetch = function(url, options = {}) {
                 gap: 10px;
                 padding: 0 10px;
             }
+            
             #groupBanner img {
                 width: 35px !important;
                 height: 35px !important;
             }
+            
             #groupBanner > div > div:first-child {
                 min-width: auto;
                 flex: 1;
@@ -1177,48 +1434,58 @@ window.fetch = function(url, options = {}) {
                 text-align: left;
                 gap: 10px !important;
             }
+            
             #groupBanner > div > div:first-child > div:last-child div:first-child {
                 font-size: 0.95em !important;
             }
+            
             #groupBanner > div > div:first-child > div:last-child div:last-child {
                 font-size: 0.75em !important;
             }
+            
             #groupBanner a {
                 padding: 6px 12px !important;
                 font-size: 0.85em !important;
             }
         }
+        
         @media (max-width: 480px) {
-            #groupBanner > div {
-                flex-direction: column;
-                gap: 2px;
-                padding: 1px 0 !important;
-            }
-            #groupBanner > div > div:first-child {
-                justify-content: center;
-                text-align: center;
-                gap: 4px !important;
-            }
-            #groupBanner a {
-                width: 90%;
-                text-align: center;
-                padding: 2px 4px !important;
-                font-size: 0.8em !important;
-            }
-        }
+    #groupBanner > div {
+        flex-direction: column;
+        gap: 2px; /* Even smaller gap */
+        padding: 1px 0 !important; /* Add this to slim overall banner */
+    }
+    
+    #groupBanner > div > div:first-child {
+        justify-content: center;
+        text-align: center;
+        gap: 4px !important; /* Even smaller gap */
+    }
+    
+    #groupBanner a {
+        width: 90%;
+        text-align: center;
+        padding: 2px 4px !important; /* Even slimmer button */
+        font-size: 0.8em !important; /* Optional: smaller text */
+    }
+}
     </style>
 </div>
+
 
 <div class="header">
     <div class="header-content">
         <h1 class="highlight-bg">Hayyat Paper Store</h1>
         <p>Your Partner in Premium Paper Solutions.</p>
+	        <!-- ANNOUNCEMENT BAR -->
         <div class="announcement-container">
             <div class="announcement-wrapper">
                 <div class="announcement-track" id="announcement-track">
+                    <!-- Announcements will load here -->
                 </div>
             </div>
         </div>
+        
         <div class="search-container">
             <input type="text" id="search-input" onkeyup="searchProducts(this.value)" 
                    placeholder="Search by paper name, size, brand or GSM...">
@@ -1253,9 +1520,11 @@ window.fetch = function(url, options = {}) {
         <h3>Your Shopping Cart</h3>
         <button id="cart-close-btn" onclick="closeCart()">✕</button>
     </div>
+    
     <div class="cart-content">
         <div id="cart-items"></div>
     </div>
+    
     <div class="cart-footer">
         <div class="cart-total" id="cart-total">Total: Rs 0</div>
         <button onclick="openCheckout()" class="checkout-btn">Proceed to Checkout</button>
@@ -1270,38 +1539,45 @@ window.fetch = function(url, options = {}) {
             <button class="checkout-close-btn" onclick="closeCheckout()">✕</button>
         </div>
         
+        <!-- TWO-COLUMN CONTAINER -->
         <div class="checkout-two-column">
+            
+            <!-- LEFT COLUMN: Customer Inputs -->
             <div class="checkout-left">
                 <div class="input-group">
                     <label for="cust-name">Full Name *</label>
                     <input id="cust-name" placeholder="Enter your full name" required>
                 </div>
+                
                 <div class="input-group">
                     <label for="cust-phone">Phone Number *</label>
                     <input id="cust-phone" placeholder="Enter your phone number" required>
                 </div>
+                
                 <div class="input-group">
                     <label for="cust-email">Email Address (Optional)</label>
                     <input id="cust-email" placeholder="Enter your email" type="email">
                 </div>
+                
                 <h3 style="margin-bottom:15px;">Shipping Method</h3>
-                <div class="shipping-options">
-                    <label class="shipping-option-btn active" for="shipping-self">
-                        <input type="radio" id="shipping-self" name="shipping" value="self" checked>
-                        <div>Self Pickup</div>
-                        <span>FREE</span>
-                    </label>
-                    <label class="shipping-option-btn" for="shipping-delivery-open">
-                        <input type="radio" id="shipping-delivery-open" name="shipping" value="open">
-                        <div>Delivery - Open</div>
-                        <span>Min Rs 450</span>
-                    </label>
-                    <label class="shipping-option-btn" for="shipping-delivery-bundle">
-                        <input type="radio" id="shipping-delivery-bundle" name="shipping" value="bundle">
-                        <div>Delivery - Bundle</div>
-                        <span>Only for Adda</span>
-                    </label>
-                </div>
+<div class="shipping-options">
+    <label class="shipping-option-btn active" for="shipping-self">
+        <input type="radio" id="shipping-self" name="shipping" value="self" checked>
+        <div>Self Pickup</div>
+        <span>FREE</span>
+    </label>
+    <label class="shipping-option-btn" for="shipping-delivery-open">
+        <input type="radio" id="shipping-delivery-open" name="shipping" value="open">
+        <div>Delivery - Open</div>
+        <span>Min Rs 450</span>
+    </label>
+    <label class="shipping-option-btn" for="shipping-delivery-bundle">
+        <input type="radio" id="shipping-delivery-bundle" name="shipping" value="bundle">
+        <div>Delivery - Bundle</div>
+        <span>Only for Adda</span>
+    </label>
+</div>
+                
                 <h3 style="margin-bottom:15px; margin-top:25px;">Payment Method</h3>
                 <div class="payment-options">
                     <label class="payment-option-btn active" for="pay-shop">
@@ -1315,6 +1591,7 @@ window.fetch = function(url, options = {}) {
                         <span>Details via WhatsApp</span>
                     </label>
                 </div>
+                
                 <div id="delivery-address-container" style="display:none; margin-top:20px;">
                     <div class="input-group">
                         <label for="delivery-address">Delivery Address *</label>
@@ -1322,8 +1599,9 @@ window.fetch = function(url, options = {}) {
                     </div>
                     <p id="delivery-charges" style="font-size: 0.9em; color: #dc3545; margin-top: 5px;"></p>
                 </div>
-            </div>
+            </div> <!-- END LEFT COLUMN -->
             
+            <!-- RIGHT COLUMN: Order Summary & Buttons -->
             <div class="checkout-right">
                 <div id="checkout-summary-box">
                     <h4>Order Summary</h4>
@@ -1331,22 +1609,21 @@ window.fetch = function(url, options = {}) {
                     <div class="summary-line"><span>Shipping</span><span>Rs 0</span></div>
                     <div class="summary-total"><span>Total</span><span>Rs 0</span></div>
                 </div>
+
                 <button onclick="placeOrder()" class="whatsapp-btn">
                     <span class="whatsapp-icon">📱</span> Place Order via WhatsApp
                 </button>
+                
                 <button onclick="closeCheckout()" class="modal-btn-close">
                     Cancel Order
                 </button>
-            </div>
-        </div>
+            </div> <!-- END RIGHT COLUMN -->
+            
+        </div> <!-- END checkout-two-column -->
+        
     </div>
 </div>
-
 <script>
-// ============================================
-// MAIN APPLICATION CODE
-// ============================================
-
 // Configuration
 const SPREADSHEET_ID = "1-KuOU3Kj4Yo6afuGN5qENwAlGvGUORQSz8qfcNCqv18"
 const API_KEY = "AIzaSyA05kFZ9ejXco6wpLFfV8WUVaUBbjnhhVI"
@@ -1356,14 +1633,26 @@ const COL = {
     ID:0, AVAILABILITY:1, CATEGORY:2, NAME:3,
     LENGTH:6, WIDTH:7, GSM:8, SHEETS:9,
     RATE:10, WEIGHT:11, PRICE:12, MAX:13, IMAGE:14,
-    HAS_COLORS:15,
+    HAS_COLORS:15,        // NEW: Column P (index 15)
     COLOR_OPTIONS:16,
-    DISPLAY_SIZE:17,
-    DISCOUNT_TAG:18,
-    NEW_TAG:19,
+DISPLAY_SIZE:17,      // Column R
+    DISCOUNT_TAG:18,      // ADD THIS - Column S
+    NEW_TAG:19,            // This is Column T (index 19)
     HALF_QTY:20,
     EVEN_ONLY:21            
 }
+
+// Function to get display size based on category
+function getDisplaySize(category, actualSize) {
+    // Only apply labels to specific categories
+    if (LABEL_CATEGORIES.includes(category)) {
+        // Return the label if it exists, otherwise keep actual size
+        return SIZE_LABELS[actualSize] || actualSize;
+    }
+    // For all other categories, show actual size
+    return actualSize;
+}
+// ===== END SIZE LABEL SYSTEM =====
 
 // Sample fallback data
 const SAMPLE_PRODUCTS = {
@@ -1381,17 +1670,51 @@ const SAMPLE_PRODUCTS = {
                 rate: "100",
                 image: "https://via.placeholder.com/300x200/004c99/ffffff?text=Art+Paper",
                 maxQty: 50,
-                category: "Premium Papers",
-                hasColors: false,
-                colorOptions: [],
-                color: '',
-                displaySize: '',
-                showGSM: true,
-                isStickerOnly: false,
-                discountTag: '',
-                newTag: '',
-                halfQty: false,
-                evenOnly: false
+                category: "Premium Papers"
+            },
+            {
+                id: "sample-2",
+                name: "Art Paper Matt",
+                size: "23x36",
+                gsm: "150",
+                sheets: "100",
+                weight: 10.5,
+                price: 1050,
+                rate: "100",
+                image: "https://via.placeholder.com/300x200/28a745/ffffff?text=Matt+Paper",
+                maxQty: 50,
+                category: "Premium Papers"
+            },
+            {
+                id: "sample-3",
+                name: "Offset Paper",
+                size: "25x36",
+                gsm: "80",
+                sheets: "500",
+                weight: 36,
+                price: 1800,
+                rate: "50",
+                image: "https://via.placeholder.com/300x200/6c757d/ffffff?text=Offset+Paper",
+                maxQty: 100,
+                category: "Premium Papers"
+            }
+        ]
+    },
+    "Specialty Papers": {
+        category: "Specialty Papers",
+        items: [
+            {
+                id: "sample-4",
+                name: "Bond Paper",
+                size: "22x34",
+                gsm: "90",
+                sheets: "500",
+                weight: 33.5,
+                price: 1675,
+                rate: "50",
+                image: "https://via.placeholder.com/300x200/dc3545/ffffff?text=Bond+Paper",
+                maxQty: 75,
+                category: "Specialty Papers"
             }
         ]
     }
@@ -1402,122 +1725,135 @@ let globalProducts = {};
 let lunrIndex = null;
 let currentShippingMethod = 'self';
 let usingFallbackData = false;
-let isOrderBeingPlaced = false;
 
-// ============================================
-// PRICE VERIFICATION SYSTEM
-// ============================================
-
-async function verifyCartPrices() {
-    if (Object.keys(cart).length === 0) return false;
+// Payment method handling
+function setupPaymentListeners() {
+    const shopBtn = document.querySelector('label[for="pay-shop"]');
+    const bankBtn = document.querySelector('label[for="pay-bank"]');
+    const shopRadio = document.getElementById('pay-shop');
+    const bankRadio = document.getElementById('pay-bank');
     
-    try {
-        const response = await fetchProductsData(true);
-        if (!response || !response.values) return false;
-        
-        const rows = response.values;
-        const currentPrices = {};
-        const currentProducts = {};
-        
-        // Create maps of current data
-        rows.forEach(row => {
-            if (row[COL.ID]) {
-                const id = row[COL.ID];
-                currentPrices[id] = Math.round(parseFloat(row[COL.PRICE] || 0));
-                currentProducts[id] = {
-                    price: Math.round(parseFloat(row[COL.PRICE] || 0)),
-                    maxQty: parseInt(row[COL.MAX] || 9999),
-                    weight: parseFloat(row[COL.WEIGHT] || 0),
-                    rate: row[COL.RATE] || 'N/A',
-                    availability: (row[COL.AVAILABILITY] || '').toUpperCase() === 'YES'
-                };
-            }
+    // Click on labels
+    if (shopBtn) {
+        shopBtn.addEventListener('click', function() {
+            shopRadio.checked = true;
+            updatePaymentButtons();
         });
-        
-        let pricesChanged = false;
-        let unavailableItems = [];
-        let updatedItems = [];
-        
-        // Check each cart item
-        Object.keys(cart).forEach(cartKey => {
-            const cartItem = cart[cartKey];
-            const currentData = currentProducts[cartItem.id];
-            
-            if (!currentData || !currentData.availability) {
-                // Item no longer available
-                unavailableItems.push(cartItem.name);
-                delete cart[cartKey];
-                pricesChanged = true;
-            } else if (currentData.price !== cartItem.price) {
-                // Price changed
-                const oldPrice = cartItem.price;
-                const newPrice = currentData.price;
-                cartItem.price = newPrice;
-                cartItem.maxQty = currentData.maxQty;
-                cartItem.weight = currentData.weight;
-                cartItem.rate = currentData.rate;
-                updatedItems.push(`${cartItem.name}: Rs ${oldPrice} → Rs ${newPrice}`);
-                pricesChanged = true;
-            }
-        });
-        
-        if (pricesChanged) {
-            let message = '🔄 Cart Updated\n\n';
-            if (updatedItems.length > 0) {
-                message += 'Price changes:\n' + updatedItems.join('\n') + '\n\n';
-            }
-            if (unavailableItems.length > 0) {
-                message += 'Removed (out of stock):\n' + unavailableItems.join('\n') + '\n\n';
-            }
-            message += 'Your cart has been updated with current prices.';
-            
-            alert(message);
-            renderCart();
-            updateCartBadge();
-        }
-        
-        return pricesChanged;
-    } catch (error) {
-        console.error('Error verifying prices:', error);
-        return false;
     }
+    
+    if (bankBtn) {
+        bankBtn.addEventListener('click', function() {
+            bankRadio.checked = true;
+            updatePaymentButtons();
+        });
+    }
+    
+    // Also listen to radio button changes directly
+    if (shopRadio) {
+        shopRadio.addEventListener('change', updatePaymentButtons);
+    }
+    
+    if (bankRadio) {
+        bankRadio.addEventListener('change', updatePaymentButtons);
+    }
+    
+    // Initial update
+    updatePaymentButtons();
 }
 
-// ============================================
-// DATA FETCHING WITH ANTI-CACHING
-// ============================================
-
-async function fetchProductsData(silent = false) {
-    const cacheBuster = new Date().getTime();
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:V?key=${API_KEY}&_cb=${cacheBuster}`;
+// Initialize on load
+document.addEventListener('DOMContentLoaded', function() {
+    fetchProducts();
+    setupShippingListeners();
+setupPaymentListeners();
     
-    try {
-        const response = await fetch(url, {
-            headers: {
-                'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
-                'Pragma': 'no-cache',
-                'Expires': '0',
-                'X-Requested-With': 'XMLHttpRequest'
+    // Close cart when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+        const cartContainer = document.getElementById('cart-container');
+        const cartBtn = document.getElementById('view-cart-btn');
+        
+        if (cartContainer.classList.contains('active') && 
+            !cartContainer.contains(event.target) && 
+            event.target !== cartBtn && 
+            !cartBtn.contains(event.target)) {
+            closeCart();
+        }
+    });
+});
+
+function setupShippingListeners() {
+    // Radio button change listeners
+    const selfRadio = document.getElementById('shipping-self');
+    const openRadio = document.getElementById('shipping-delivery-open');
+    const bundleRadio = document.getElementById('shipping-delivery-bundle');
+    
+    if (selfRadio) {
+        selfRadio.addEventListener('change', function() {
+            if (this.checked) {
+                updateShipping('self');
             }
         });
+    }
+    
+    if (openRadio) {
+        openRadio.addEventListener('change', function() {
+            if (this.checked) {
+                updateShipping('open');
+            }
+        });
+    }
+    
+    if (bundleRadio) {
+        bundleRadio.addEventListener('change', function() {
+            if (this.checked) {
+                updateShipping('bundle');
+            }
+        });
+    }
+    
+    // Label click listeners
+    const selfLabel = document.querySelector('label[for="shipping-self"]');
+    const openLabel = document.querySelector('label[for="shipping-delivery-open"]');
+    const bundleLabel = document.querySelector('label[for="shipping-delivery-bundle"]');
+    
+    if (selfLabel) {
+        selfLabel.addEventListener('click', function() {
+            document.getElementById('shipping-self').checked = true;
+            updateShipping('self');
+        });
+    }
+    
+    if (openLabel) {
+        openLabel.addEventListener('click', function() {
+            document.getElementById('shipping-delivery-open').checked = true;
+            updateShipping('open');
+        });
+    }
+    
+    if (bundleLabel) {
+        bundleLabel.addEventListener('click', function() {
+            document.getElementById('shipping-delivery-bundle').checked = true;
+            updateShipping('bundle');
+        });
+    }
+}
+async function fetchProducts(){
+    try {
+        // Show loading indicator
+        document.getElementById('loading-indicator').style.display = 'block';
+        
+        // Try to fetch from Google Sheets
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:V?key=${API_KEY}`;
+        console.log('Fetching from URL:', url);
+        
+        const response = await fetch(url);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
-        return data;
-    } catch (error) {
-        if (!silent) console.error('Error fetching data:', error);
-        throw error;
-    }
-}
-
-async function fetchProducts(){
-    try {
-        document.getElementById('loading-indicator').style.display = 'block';
-        
-        const data = await fetchProductsData(false);
+        console.log('API Response:', data);
         
         if (!data.values || data.values.length === 0) {
             throw new Error('No data found in spreadsheet');
@@ -1534,21 +1870,28 @@ async function fetchProducts(){
         buildLunrIndex(groupedProducts);
         renderProducts(groupedProducts);
         
+        // Hide loading, show products
         document.getElementById('loading-indicator').style.display = 'none';
         document.getElementById('product-list').style.display = 'grid';
         document.getElementById('view-cart-btn').style.display = 'flex';
-        
-        fetchAnnouncements();
+	// ADD THIS LINE:
+fetchAnnouncements();  // Load announcements
         
     } catch (error) {
         console.error('Error fetching products:', error);
         
+        // Use fallback data
+        console.log('Using fallback data...');
         usingFallbackData = true;
+        
         globalProducts = SAMPLE_PRODUCTS;
         buildLunrIndex(SAMPLE_PRODUCTS);
         renderProducts(SAMPLE_PRODUCTS);
         
+        // Show fallback notice
         document.getElementById('fallback-notice').style.display = 'block';
+        
+        // Hide loading, show products
         document.getElementById('loading-indicator').style.display = 'none';
         document.getElementById('product-list').style.display = 'grid';
         document.getElementById('view-cart-btn').style.display = 'flex';
@@ -1558,16 +1901,9 @@ async function fetchProducts(){
 async function fetchAnnouncements() {
     try {
         const SHEET_NAME = "Announcement";
-        const cacheBuster = new Date().getTime();
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:C?key=${API_KEY}&_cb=${cacheBuster}`;
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:C?key=${API_KEY}`;
         
-        const response = await fetch(url, {
-            headers: {
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                'Pragma': 'no-cache',
-                'Expires': '0'
-            }
-        });
+        const response = await fetch(url);
         
         if (!response.ok) {
             throw new Error('Failed to fetch announcements');
@@ -1576,11 +1912,13 @@ async function fetchAnnouncements() {
         const data = await response.json();
         
         if (!data.values || data.values.length === 0) {
+            console.log('No announcements found');
             document.querySelector('.announcement-container').style.display = 'none';
             return;
         }
         
         const announcements = [];
+        
         data.values.forEach(row => {
             if (row.length >= 3) {
                 const text = row[0] || '';
@@ -1588,7 +1926,10 @@ async function fetchAnnouncements() {
                 const priority = parseInt(row[2]) || 999;
                 
                 if (text && active === 'active') {
-                    announcements.push({ text, priority });
+                    announcements.push({
+                        text: text,
+                        priority: priority
+                    });
                 }
             }
         });
@@ -1598,7 +1939,9 @@ async function fetchAnnouncements() {
             return;
         }
         
+        // Sort by priority
         announcements.sort((a, b) => a.priority - b.priority);
+        
         displayAnnouncements(announcements);
         
     } catch (error) {
@@ -1613,12 +1956,14 @@ function displayAnnouncements(announcements) {
     
     track.innerHTML = '';
     
+    // Create announcement items
     announcements.forEach((ann, index) => {
         const item = document.createElement('div');
         item.className = 'announcement-item';
         item.textContent = ann.text;
         track.appendChild(item);
         
+        // Add separator between announcements
         if (index < announcements.length - 1) {
             const separator = document.createElement('span');
             separator.className = 'announcement-separator';
@@ -1627,21 +1972,22 @@ function displayAnnouncements(announcements) {
         }
     });
     
+    // Create seamless loop by duplicating content within same track
     const originalContent = track.innerHTML;
     track.innerHTML = originalContent + ' ' + originalContent;
     
-    const contentWidth = track.scrollWidth / 2;
-    const baseSpeed = 40;
-    const speedFactor = Math.max(0.5, Math.min(2, contentWidth / 1000));
+    // Calculate scroll speed based on content length (longer content = slower)
+    const contentWidth = track.scrollWidth / 2; // Divide by 2 because we duplicated
+    const baseSpeed = 40; // Base speed in seconds
+    const speedFactor = Math.max(0.5, Math.min(2, contentWidth / 1000)); // Adjust factor
     const finalSpeed = baseSpeed * speedFactor;
     
+    // Apply the speed
     track.style.animationDuration = `${finalSpeed}s`;
+    
+    // Show the container
     document.querySelector('.announcement-container').style.display = 'block';
 }
-
-// ============================================
-// PRODUCT DATA PROCESSING
-// ============================================
 
 function group(rows){
     console.log("=== DEBUG: First row all columns ===")
@@ -1656,6 +2002,7 @@ function group(rows){
         const cat = r[COL.CATEGORY] || 'Uncategorized'
         if(!g[cat]) g[cat] = {category: cat, items: []}
         
+        // Get color info
         const hasColors = (r[COL.HAS_COLORS] || '').toUpperCase() === 'YES'
         const colorOptions = hasColors ? (r[COL.COLOR_OPTIONS] || '').split(',').map(c => c.trim()) : []
         
@@ -1674,13 +2021,13 @@ function group(rows){
             hasColors: hasColors,
             colorOptions: colorOptions,
             color: hasColors && colorOptions.length > 0 ? colorOptions[0] : '',
-            displaySize: r[COL.DISPLAY_SIZE] || '',
-            showGSM: !["White Sticker", "Stickers"].includes(cat),
-            isStickerOnly: cat === "Stickers",
-            discountTag: r[COL.DISCOUNT_TAG] || '',
-            newTag: r[COL.NEW_TAG] || '',
-            halfQty: (r[COL.HALF_QTY] || '').toUpperCase() === 'YES',
-            evenOnly: (r[COL.EVEN_ONLY] || '').toUpperCase() === 'YES'               
+            displaySize: r[COL.DISPLAY_SIZE] || '',  // Custom display text from Column R
+            showGSM: !["White Sticker", "Stickers"].includes(cat),  // Control GSM display
+            isStickerOnly: cat === "Stickers",  // NEW: Flag for stickers category
+    discountTag: r[COL.DISCOUNT_TAG] || '',      // ADD THIS
+    newTag: r[COL.NEW_TAG] || '',               // Existing line
+    halfQty: (r[COL.HALF_QTY] || '').toUpperCase() === 'YES',
+    evenOnly: (r[COL.EVEN_ONLY] || '').toUpperCase() === 'YES'  // NEW LINE               
         })
     })
     return g
@@ -1696,7 +2043,7 @@ function buildLunrIndex(groups){
         this.field('category');
         this.field('size');
         this.field('gsm');
-        this.field('displaySize');
+	this.field('displaySize');
         
         Object.keys(groups).forEach(cat => {
             const items = groups[cat].items;
@@ -1708,7 +2055,7 @@ function buildLunrIndex(groups){
                     category: cat.toLowerCase(),
                     size: item.size.toLowerCase(),
                     gsm: item.gsm.toLowerCase(),
-                    displaySize: (item.displaySize || '').toLowerCase() 
+displaySize: (item.displaySize || '').toLowerCase() 
                 };
                 this.add(doc);
                 indexStore[item.id] = item;
@@ -1728,14 +2075,15 @@ function searchProducts(query){
     }
 
     if (!lunrIndex) {
+        // Simple search fallback
         const filteredGroups = {};
         Object.keys(globalProducts).forEach(cat => {
             const filteredItems = globalProducts[cat].items.filter(item => 
                 item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 item.size.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 item.gsm.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (item.displaySize || '').toLowerCase().includes(searchTerm.toLowerCase())
+                item.category.toLowerCase().includes(searchTerm.toLowerCase())||
+  				    (item.displaySize || '').toLowerCase().includes(searchTerm.toLowerCase())
             );
             
             if (filteredItems.length > 0) {
@@ -1778,14 +2126,17 @@ function searchProducts(query){
         renderProducts(filteredGroups, true);
     } catch (error) {
         console.error('Search error:', error);
+        // Show all products on search error
         renderProducts(globalProducts);
     }
 }
 
-// ============================================
-// RENDERING FUNCTIONS
-// ============================================
+// After rendering products
+setTimeout(() => {
+    initializeAllProducts()
+}, 100)
 
+// Helper function for color button styling
 function getColorStyle(colorName) {
     const colorMap = {
         'White': 'background: #ffffff; color: #333; border: 1px solid #ddd;',
@@ -1797,13 +2148,17 @@ function getColorStyle(colorName) {
         'Cream': 'background: #fffdd0; color: #333; border: 1px solid #ddd;',
         'Gray': 'background: #6c757d; color: white;',
         'Brown': 'background: #8B4513; color: white;',
-        'Pink': 'background: #e83e8c; color: white;',
+'Pink': 'background: #e83e8c; color: white;', // ADD THIS LINE
         'Orange': 'background: #fd7e14; color: white;'
     };
     
-    return colorMap[colorName] || 'background: #f8f9fa; color: #333;';
+    if (colorMap[colorName]) {
+        return colorMap[colorName];
+    }
+    return 'background: #f8f9fa; color: #333;';
 }
 
+// Helper function to get quantity step
 function getQuantityStep(product) {
     if (product.evenOnly) return '2';
     if (product.halfQty) return '0.5';
@@ -1826,10 +2181,12 @@ function renderProducts(groups, isSearch = false){
 
     Object.keys(groups).forEach(cat => {
         if (cat && cat !== "undefined") {
+            // Create category container
             wrap.innerHTML += `
 <div class="category-section">
     <h2 class="category-header highlight-bg" onclick="toggleCategory('${safeKey(cat)}')">${cat}</h2>
     <div class="category-products" id="cat-${safeKey(cat)}" style="max-height: 0;">
+        <!-- Products will be added here -->
     </div>
 </div>`
         }
@@ -1842,16 +2199,21 @@ function renderProducts(groups, isSearch = false){
             grouped[key].variations.push(i)
         })
         
+        // Get the container for this category
         const categoryContainer = document.getElementById(`cat-${safeKey(cat)}`)
         
         Object.keys(grouped).forEach(k => {
             const g = grouped[k]
             const sizes = [...new Set(g.variations.map(v => v.size))]
             
+            // CRITICAL: Determine if this category needs GSM filtering
+            // Photocopy Paper and Stickers should NOT have GSM filtering
             const shouldFilterGsms = !["Photocopy Paper", "Stickers", "A4 Paper", "White Sticker"].includes(cat)
             
+            // Only create GSM map if needed
             let sizeToGsmsMap = {}
             if (shouldFilterGsms) {
+                // Create a map of available GSMs for each size (for categories that need filtering)
                 g.variations.forEach(v => {
                     if (!sizeToGsmsMap[v.size]) {
                         sizeToGsmsMap[v.size] = []
@@ -1860,40 +2222,54 @@ function renderProducts(groups, isSearch = false){
                         sizeToGsmsMap[v.size].push(v.gsm)
                     }
                 })
+                
+                // Store this map globally for dynamic updates
                 window[`sizeToGsms_${k}`] = sizeToGsmsMap
             }
             
+            // Get ALL GSMs for the product (for all categories)
             const allGsms = [...new Set(g.variations.map(v => v.gsm))]
             
+            // NEW: Get colors if product has colors
             let colors = []
             if (g.hasColors && g.colorOptions && g.colorOptions.length > 0) {
                 colors = g.colorOptions
             } else {
+                // For products without colors, still track available colors from variations
                 const availableColors = [...new Set(g.variations.map(v => v.color || '').filter(c => c))]
                 if (availableColors.length > 0) {
                     colors = availableColors
                 }
             }
             
+            // Create variation map
             const map = {}
             g.variations.forEach(v => {
+                // ALWAYS create key with brand if brand exists
                 if (v.displaySize) {
+                    // Primary key: size_gsm_brand
                     const brandKey = `${v.size}_${v.gsm}_${v.displaySize}`
                     map[brandKey] = v
+                    
+                    // Also create fallback key without brand (for backward compatibility)
                     const fallbackKey = `${v.size}_${v.gsm}`
                     if (!map[fallbackKey]) {
                         map[fallbackKey] = v
                     }
                 } else {
+                    // For products without brand: size_gsm
                     const baseKey = `${v.size}_${v.gsm}`
                     map[baseKey] = v
                 }
                 
+                // If product has color, create color-specific keys
                 if (v.color) {
                     if (v.displaySize) {
+                        // size_gsm_brand_color
                         const colorBrandKey = `${v.size}_${v.gsm}_${v.displaySize}_${v.color}`
                         map[colorBrandKey] = v
                     }
+                    // size_gsm_color (fallback)
                     const colorKey = `${v.size}_${v.gsm}_${v.color}`
                     map[colorKey] = v
                 }
@@ -1901,9 +2277,12 @@ function renderProducts(groups, isSearch = false){
             
             window[`map_${k}`] = map
             window[`size_${k}`] = sizes[0]
-            window[`gsm_${k}`] = allGsms[0]
+            window[`gsm_${k}`] = allGsms[0] // Set to first GSM
+            
+            // Store category info for this product
             window[`category_${k}`] = cat
             
+            // NEW: Set default brand for Photocopy Paper AND Stickers
             if (cat === "Photocopy Paper" || cat === "Stickers") {
                 const brands = [...new Set(g.variations.map(v => v.displaySize).filter(brand => brand))]
                 if (brands.length > 0) {
@@ -1911,21 +2290,25 @@ function renderProducts(groups, isSearch = false){
                 }
             }
             
+            // NEW: Set default color
             if (colors.length > 0) {
                 window[`color_${k}`] = colors[0]
             } else {
                 window[`color_${k}`] = ''
             }
 
+            // Create product card HTML
             let productHtml = ''
             
             if (cat === "Photocopy Paper" || cat === "Stickers") {
+                // SPECIAL HANDLING for Photocopy Paper & Stickers (show brands + GSM)
                 productHtml = `
 <div class="product-card">
     <img id="img_${k}" src="${g.variations[0].image}" alt="${g.name}">
     <div class="product-info">
         <h3>${g.name}</h3>
         
+        <!-- Photocopy Paper & Stickers: Show brands + GSM -->
         <div class="variation-grid brand-grid">
             ${[...new Set(g.variations.map(v => v.displaySize).filter(brand => brand))].map((brand,i) => {
                 return `<button class="variation-btn brand-btn ${i===0?'active':''}" onclick="selectVar('${k}','brand','${brand}',this)">
@@ -1936,6 +2319,7 @@ function renderProducts(groups, isSearch = false){
             }).join("")}
         </div>
 
+        <!-- GSM for Photocopy Paper & Stickers (show all GSMs) -->
         ${g.variations[0].showGSM ? `
         <div class="variation-grid gsm-grid">
             ${allGsms.map((gsmVal,i)=>`<button class="variation-btn ${i===0?'active':''}" onclick="selectVar('${k}','gsm','${gsmVal}',this)">${gsmVal}</button>`).join("")}
@@ -1956,6 +2340,7 @@ function renderProducts(groups, isSearch = false){
     </div>
 </div>`
             } else {
+                // REGULAR PRODUCTS with GSM filtering
                 productHtml = `
 <div class="product-card">
     ${cat !== "Photocopy Paper" && cat !== "Stickers" ? `
@@ -1966,18 +2351,23 @@ function renderProducts(groups, isSearch = false){
     <div class="product-info">
         <h3>${g.name}</h3>
         
+        <!-- SIZE SELECTION (for regular products) -->
         <div class="variation-grid size-grid">
             ${sizes.map((s,i)=>`<button class="variation-btn ${i===0?'active':''}" onclick="selectVar('${k}','size','${s}',this)">${s}</button>`).join("")}
         </div>
 
+        <!-- DYNAMIC GSM SELECTION - Will be updated when size changes (for regular products) -->
         <div class="variation-grid gsm-grid" id="gsm-grid-${k}">
             ${shouldFilterGsms ? 
+                // Show GSMs for the first size
                 (sizeToGsmsMap[sizes[0]] || []).map((gsmVal,i)=>`<button class="variation-btn ${i===0?'active':''}" onclick="selectVar('${k}','gsm','${gsmVal}',this)">${gsmVal}</button>`).join("") 
                 : 
+                // Show all GSMs for categories that don't need filtering
                 allGsms.map((gsmVal,i)=>`<button class="variation-btn ${i===0?'active':''}" onclick="selectVar('${k}','gsm','${gsmVal}',this)">${gsmVal}</button>`).join("")
             }
         </div>
 
+        <!-- COLOR SELECTOR - ONLY SHOW IF PRODUCT HAS COLORS -->
         ${colors.length > 0 ? `
         <div class="variation-grid color-grid" id="color-grid-${k}">
             ${colors.map((color,i)=>`
@@ -2005,13 +2395,13 @@ function renderProducts(groups, isSearch = false){
 </div>`
             }
             
+            // Add to category container
             categoryContainer.innerHTML += productHtml
+            
+            // Initialize UI with default values
             updateUI(k)
         })
     })
-    
-    // Expand all categories after rendering
-    setTimeout(expandAllCategories, 100);
 }
 
 function safeKey(t) { 
@@ -2019,11 +2409,16 @@ function safeKey(t) {
 }
 
 function selectVar(key, type, val, btn){
+    // Get the category for this product
     const category = window[`category_${key}`]
+    
+    // Check if this category needs GSM filtering
     const shouldFilterGsms = !["Photocopy Paper", "Stickers", "A4 Paper", "White Sticker"].includes(category)
     
     if(type === "size") {
         window[`size_${key}`] = val
+        
+        // When size changes, update available GSM options dynamically (only for categories that need filtering)
         if (shouldFilterGsms) {
             updateAvailableGsms(key, val)
         }
@@ -2032,6 +2427,7 @@ function selectVar(key, type, val, btn){
     if(type === "color") window[`color_${key}`] = val
     if(type === "brand") window[`brand_${key}`] = val
     
+    // Remove active class from all buttons of the same type
     const parent = btn.parentElement
     parent.querySelectorAll(".variation-btn").forEach(b => b.classList.remove("active"))
     btn.classList.add("active")
@@ -2039,7 +2435,9 @@ function selectVar(key, type, val, btn){
     updateUI(key)
 }
 
+// GSM updating function (only for categories that need it)
 function updateAvailableGsms(key, selectedSize) {
+    // Get the GSM map for this product
     const gsmMap = window[`sizeToGsms_${key}`]
     
     if (!gsmMap) {
@@ -2047,7 +2445,10 @@ function updateAvailableGsms(key, selectedSize) {
         return
     }
     
+    // Get available GSMs for the selected size
     const availableGsms = gsmMap[selectedSize] || []
+    
+    // Get the GSM grid container
     const gsmGrid = document.getElementById(`gsm-grid-${key}`)
     
     if (!gsmGrid) {
@@ -2055,12 +2456,15 @@ function updateAvailableGsms(key, selectedSize) {
         return
     }
     
+    // Clear existing GSM buttons
     gsmGrid.innerHTML = ''
     
     if (availableGsms.length === 0) {
+        // No GSMs available for this size
         gsmGrid.innerHTML = '<button class="variation-btn" disabled>No GSM available</button>'
         window[`gsm_${key}`] = ''
     } else {
+        // Create new GSM buttons for available GSMs
         availableGsms.forEach((gsm, index) => {
             const button = document.createElement('button')
             button.className = `variation-btn ${index === 0 ? 'active' : ''}`
@@ -2069,30 +2473,84 @@ function updateAvailableGsms(key, selectedSize) {
             gsmGrid.appendChild(button)
         })
         
+        // Update the selected GSM to the first available option
         window[`gsm_${key}`] = availableGsms[0]
     }
     
+    // Update UI immediately to reflect the change
+    updateUI(key)
+}
+
+// NEW FUNCTION: Update available GSM options when size changes
+function updateAvailableGsms(key, selectedSize) {
+    // Get the GSM map for this product
+    const gsmMap = window[`sizeToGsms_${key}`]
+    
+    if (!gsmMap) {
+        console.error(`No GSM map found for product: ${key}`)
+        return
+    }
+    
+    // Get available GSMs for the selected size
+    const availableGsms = gsmMap[selectedSize] || []
+    
+    // Get the GSM grid container
+    const gsmGrid = document.getElementById(`gsm-grid-${key}`)
+    
+    if (!gsmGrid) {
+        console.error(`No GSM grid found for product: ${key}`)
+        return
+    }
+    
+    // Clear existing GSM buttons
+    gsmGrid.innerHTML = ''
+    
+    if (availableGsms.length === 0) {
+        // No GSMs available for this size
+        gsmGrid.innerHTML = '<button class="variation-btn" disabled>No GSM available</button>'
+        window[`gsm_${key}`] = ''
+    } else {
+        // Create new GSM buttons for available GSMs
+        availableGsms.forEach((gsm, index) => {
+            const button = document.createElement('button')
+            button.className = `variation-btn ${index === 0 ? 'active' : ''}`
+            button.textContent = gsm
+            button.onclick = function() { selectVar(key, 'gsm', gsm, this) }
+            gsmGrid.appendChild(button)
+        })
+        
+        // Update the selected GSM to the first available option
+        window[`gsm_${key}`] = availableGsms[0]
+    }
+    
+    // Update UI immediately to reflect the change
     updateUI(key)
 }
 
 function updateUI(key){
+    // Get selected values
     const selectedSize = window[`size_${key}`]
     const selectedGsm = window[`gsm_${key}`]
     const selectedColor = window[`color_${key}`] || ''
-    const selectedBrand = window[`brand_${key}`] || ''
+    const selectedBrand = window[`brand_${key}`] || ''  // Get selected brand
     
+    // Build the lookup key - PRIORITY: size_gsm_brand_color
     let lookupKey = `${selectedSize}_${selectedGsm}`
     
+    // Add brand to lookup if selected
     if (selectedBrand) {
         lookupKey += `_${selectedBrand}`
     }
     
+    // Add color to lookup if selected
     if (selectedColor) {
         lookupKey += `_${selectedColor}`
     }
     
+    // Find the product variation
     let p = window[`map_${key}`][lookupKey]
     
+    // If not found with brand+color, try without color
     if (!p && selectedColor) {
         lookupKey = `${selectedSize}_${selectedGsm}`
         if (selectedBrand) {
@@ -2101,6 +2559,7 @@ function updateUI(key){
         p = window[`map_${key}`][lookupKey]
     }
     
+    // If still not found with brand, try without brand (but with color if exists)
     if (!p && selectedBrand) {
         lookupKey = `${selectedSize}_${selectedGsm}`
         if (selectedColor) {
@@ -2109,26 +2568,34 @@ function updateUI(key){
         p = window[`map_${key}`][lookupKey]
     }
     
+    // If still not found, try base key (size_gsm only)
     if(!p) {
         const fallbackKey = `${selectedSize}_${selectedGsm}`
         p = window[`map_${key}`][fallbackKey]
     }
     
+    // If product found
     if(p) {
+        // Update display
         document.getElementById(`price_${key}`).innerText = `Rs ${p.price} (Rs ${p.rate}/KG)`
         
+        // Show different info based on product type
         const infoElement = document.getElementById(`info_${key}`)
         if (p.showGSM === false) {
+            // For products that don't show GSM (White Sticker, Stickers)
             infoElement.innerText = `${p.sheets} Sheets | Rs ${p.rate}/KG`
         } else {
+            // For regular products (including Photocopy Paper)
             infoElement.innerText = `${p.gsm} GSM | Rs ${p.rate}/KG`
         }
         
+        // Update image
         const img = document.getElementById(`img_${key}`)
         if (img && p.image) {
             img.src = p.image
         }
 
+        // Update quantity limit
         const qtyInput = document.getElementById(`qty_${key}`)
         if(qtyInput){
             qtyInput.max = p.maxQty
@@ -2136,11 +2603,6 @@ function updateUI(key){
         }
     }
 }
-
-// ============================================
-// CART FUNCTIONS WITH PRICE VERIFICATION
-// ============================================
-
 function updateCartBadge(){
     const totalItems = Object.values(cart).reduce((sum, item) => sum + item.qty, 0)
     const badge = document.getElementById("cart-count-badge")
@@ -2148,21 +2610,20 @@ function updateCartBadge(){
     badge.style.display = totalItems > 0 ? "flex" : "none"
 }
 
+// Cart Management Functions
 function toggleCart() {
     const cartEl = document.getElementById("cart-container");
-    if (!cartEl.classList.contains("active")) {
-        verifyCartPrices(); // Verify prices before opening cart
-    }
     cartEl.classList.toggle("active");
     
+    // Update button text based on state
     const btn = document.getElementById("view-cart-btn");
     const isOpen = cartEl.classList.contains("active");
     btn.querySelector('.cart-text').textContent = isOpen ? "Close Cart" : "View Cart";
+    
+    // Prevent body scroll when cart is open
     document.body.style.overflow = isOpen ? "hidden" : "auto";
 }
-
 function openCart() {
-    verifyCartPrices(); // Verify prices before opening cart
     const cartEl = document.getElementById("cart-container")
     cartEl.classList.add("active")
     document.body.style.overflow = "hidden"
@@ -2180,6 +2641,361 @@ function closeCart() {
     btn.innerHTML = `<span class="cart-icon">🛒</span><span class="cart-text">View Cart</span><span id="cart-count-badge" class="cart-count">${Object.values(cart).reduce((sum, item) => sum + item.qty, 0)}</span>`
 }
 
+// Checkout Functions
+function openCheckout(){
+    if(Object.keys(cart).length === 0){
+        alert("Your cart is empty")
+        return
+    }
+    
+    closeCart()
+    
+    document.getElementById("cust-name").value = ""
+    document.getElementById("cust-email").value = ""
+    document.getElementById("cust-phone").value = ""
+    document.getElementById("delivery-address").value = ""
+    
+    document.getElementById('shipping-self').checked = true;
+    updateShipping('self', false);
+    
+    document.getElementById("checkout-modal").classList.add("active")
+    document.body.style.overflow = "hidden"
+}
+
+function closeCheckout(){
+    document.getElementById("checkout-modal").classList.remove("active")
+    document.body.style.overflow = "auto"
+}
+
+// ===== CHECKOUT HELPER FUNCTIONS =====
+function updateShipping(method, updateRadio = true){
+    currentShippingMethod = method;
+    const container = document.getElementById("delivery-address-container")
+    
+    // Get all shipping buttons
+    const selfBtn = document.querySelector('label[for="shipping-self"]')
+    const openBtn = document.querySelector('label[for="shipping-delivery-open"]')
+    const bundleBtn = document.querySelector('label[for="shipping-delivery-bundle"]')
+
+    if (updateRadio) {
+        document.querySelector(`input[value="${method}"]`).checked = true;
+    }
+    
+    // Remove active class from all shipping buttons
+    [selfBtn, openBtn, bundleBtn].forEach(btn => {
+        if (btn) btn.classList.remove("active")
+    })
+    
+    // Show/hide address container based on method
+    if (method === "open" || method === "bundle") {
+        container.style.display = "block"
+        // Add active class to selected button
+        if (method === "open" && openBtn) openBtn.classList.add("active")
+        if (method === "bundle" && bundleBtn) bundleBtn.classList.add("active")
+        calculateDeliveryCharges(method)
+    } else {
+        // Self pickup
+        container.style.display = "none"
+        if (selfBtn) selfBtn.classList.add("active")
+        document.getElementById("delivery-charges").innerText = ""
+        updateCheckoutTotal(0)
+    }
+}
+function calculateDeliveryCharges(method = 'open'){
+    let totalWeight = 0
+    Object.values(cart).forEach(item => {
+        totalWeight += item.weight * item.qty
+    })
+    
+    let deliveryCharges = 0
+    let chargesText = ""
+    
+    if (method === 'open') {
+        // OPEN delivery logic (existing)
+        let baseCharges = Math.max(Math.round(totalWeight * 3), 450) // Changed from 700 to 400
+        
+        // Calculate products total
+        let productsTotal = 0
+        Object.values(cart).forEach(i => {
+            productsTotal += i.price * i.qty
+        })
+        
+        // Calculate current total
+        let currentTotal = productsTotal + baseCharges
+        
+        // Check if current total already ends in 00
+        if (currentTotal % 100 === 0) {
+            deliveryCharges = baseCharges
+            chargesText = `Delivery Charges (Open): Rs ${deliveryCharges}`
+        } else {
+            // Calculate how much to add to make it round (ending with 00)
+            let remainder = currentTotal % 100
+            let amountToAdd = 100 - remainder
+            deliveryCharges = baseCharges + amountToAdd
+            chargesText = `Delivery Charges (Open): Rs ${deliveryCharges}`
+        }
+        
+    } else if (method === 'bundle') {
+        // BUNDLE delivery logic (new)
+        // Step 1: Weight ÷ 70
+        let bundles = totalWeight / 70
+        
+        // Step 2: Round based on remainder rules
+        let decimalPart = bundles % 1
+        
+        if (decimalPart <= 0.5) {
+            // Round down if remainder ≤ 0.5
+            bundles = Math.floor(bundles)
+        } else {
+            // Round up if remainder > 0.5
+            bundles = Math.ceil(bundles)
+        }
+        
+        // Ensure at least 1 bundle
+        bundles = Math.max(1, bundles)
+        
+        // Step 3: Multiply by 250
+        deliveryCharges = bundles * 250
+        
+        // Show calculation details
+        chargesText = `Delivery Charges (Bundle): Rs ${deliveryCharges} (${bundles} bundles × Rs 250)`
+    }
+    
+    // Update display
+    document.getElementById("delivery-charges").innerText = chargesText
+    updateCheckoutTotal(deliveryCharges)
+    return deliveryCharges
+}
+function updateCheckoutTotal(deliveryCharges){
+    let total = 0
+    Object.values(cart).forEach(i => {
+        total += i.price * i.qty
+    })
+    
+    const subtotal = total
+    total += deliveryCharges || 0
+    const totalWeight = Object.values(cart).reduce((sum, i) => sum + i.weight * i.qty, 0)
+    
+    document.getElementById("checkout-summary-box").innerHTML = generateSummaryText(subtotal, total, totalWeight, deliveryCharges)
+}
+
+function generateSummaryText(subtotal, total, totalWeight, deliveryCharges){
+    let summaryHtml = "<h4>Order Summary</h4>"
+    
+    summaryHtml += `<div class="summary-line"><span>Subtotal (${Object.keys(cart).length} Items)</span><span>Rs ${subtotal}</span></div>`
+    
+    const shippingText = deliveryCharges > 0 ? `Rs ${deliveryCharges}` : `FREE`
+summaryHtml += `<div class="summary-line"><span>Shipping</span><span>${shippingText}</span></div>`
+    
+    summaryHtml += `<div class="summary-line" style="font-size: 0.9em; padding-top: 10px; border-top: 1px dashed #ddd;">
+                      <span>Total Weight</span><span>${Math.round(totalWeight)} KG</span></div>`
+    
+    summaryHtml += `<div class="summary-total"><span>Total</span><span>Rs ${total}</span></div>`
+    
+    summaryHtml += `<div style="border-top: 1px solid #eee; margin-top: 15px; padding-top: 10px; font-size: 0.85em;">`
+    summaryHtml += `<p style="margin: 0 0 8px 0; font-weight: 700;">Items in Cart:</p>`
+    Object.values(cart).forEach(i => {
+        const itemTotal = i.price * i.qty
+        summaryHtml += `<div style="margin-bottom: 5px; padding: 5px 0; border-bottom: 1px dashed #f0f0f0;">
+                          ${i.name} (${i.size}, ${i.gsm} GSM${i.selectedBrand ? `, ${i.selectedBrand}` : ''}${i.selectedColor ? `, ${i.selectedColor}` : ''})<br>
+                          <small>${i.qty} × Rs ${i.price} = Rs ${itemTotal}</small>
+                        </div>`
+    })
+    summaryHtml += `</div>`
+
+    return summaryHtml
+}
+
+function removeFromCart(cartKey){
+    delete cart[cartKey]
+    renderCart()
+    updateCartBadge()
+}
+// ===== END CHECKOUT FUNCTIONS =====
+
+// ADD TO CART FUNCTION - UPDATED FOR BRAND
+function addToCart(key){
+    const qtyInput = document.getElementById(`qty_${key}`)
+    let rawQty = qtyInput.value;
+
+    // Get selected values
+    const selectedSize = window[`size_${key}`]
+    const selectedGsm = window[`gsm_${key}`]
+    const selectedColor = window[`color_${key}`] || ''
+    const selectedBrand = window[`brand_${key}`] || ''
+
+console.log("=== DEBUG START ===");
+    console.log("Selected Size:", selectedSize, "GSM:", selectedGsm, "Brand:", selectedBrand, "Color:", selectedColor);
+    console.log("All keys in map for this product:", Object.keys(window[`map_${key}`]));
+    let debugLookupKey = `${selectedSize}_${selectedGsm}`;
+    if (selectedBrand) debugLookupKey += `_${selectedBrand}`;
+    if (selectedColor) debugLookupKey += `_${selectedColor}`;
+    console.log("Looking for key:", debugLookupKey);
+    console.log("Product found?", window[`map_${key}`][debugLookupKey]);
+    if (window[`map_${key}`][debugLookupKey]) {
+        console.log("Found product color:", window[`map_${key}`][debugLookupKey].color);
+    }
+    console.log("=== DEBUG END ===");
+    // ===== END DEBUG BLOCK =====
+
+    // Build lookup key in ORDER OF PRIORITY
+    let variantKey = `${selectedSize}_${selectedGsm}`
+    
+    // 1. Try with brand + color (if both exist)
+    if (selectedBrand && selectedColor) {
+        variantKey = `${selectedSize}_${selectedGsm}_${selectedBrand}_${selectedColor}`
+    }
+    // 2. Try with brand only
+    else if (selectedBrand) {
+        variantKey = `${selectedSize}_${selectedGsm}_${selectedBrand}`
+    }
+    // 3. Try with color only  
+    // 3. Try with color only  
+else if (selectedColor) {
+    // Include brand if available
+    if (selectedBrand) {
+        variantKey = `${selectedSize}_${selectedGsm}_${selectedBrand}_${selectedColor}`
+    } else {
+        variantKey = `${selectedSize}_${selectedGsm}_${selectedColor}`
+    }
+}
+    // 4. Base key already set
+    
+    let p = window[`map_${key}`][variantKey]
+    
+    // If not found, try other combinations
+    if (!p) {
+        // Try brand without color (if we tried with color)
+        if (selectedBrand && selectedColor) {
+            variantKey = `${selectedSize}_${selectedGsm}_${selectedBrand}`
+            p = window[`map_${key}`][variantKey]
+        }
+        // Try color without brand (if we tried with brand)
+        // Try color without brand (if we tried with brand)
+if (!p && selectedBrand && selectedColor) {
+    // Try with color only (no brand)
+    variantKey = `${selectedSize}_${selectedGsm}_${selectedColor}`
+    p = window[`map_${key}`][variantKey]
+    
+    // If still not found, try brand only (no color)
+    if (!p) {
+        variantKey = `${selectedSize}_${selectedGsm}_${selectedBrand}`
+        p = window[`map_${key}`][variantKey]
+    }
+}
+        // Try base key (no brand, no color)
+        if (!p) {
+            variantKey = `${selectedSize}_${selectedGsm}`
+            p = window[`map_${key}`][variantKey]
+        }
+    }
+
+    if(!p){
+        alert("⚠️ ATTENTION: PRODUCT IS OUT OF STOCK ⚠️")
+        return
+    }
+
+        // ✅ START OF NEW VALIDATION: Check if quantity is valid
+    let qty = parseFloat(rawQty); // Use parseFloat for decimals
+    const allowHalf = p.halfQty === true; // Check the flag from your sheet
+    const evenOnly = p.evenOnly === true; // NEW: Check even-only flag
+
+    // Check if it's a valid number for this product
+    if (isNaN(qty) || qty <= 0) {
+        alert("Please enter a valid quantity");
+        return;
+    }
+
+    // Check if quantity is a whole number (except for half quantities)
+    if (!allowHalf) {
+        // For non-half quantities: check if it's a whole number
+        if (Math.abs(qty - Math.round(qty)) > 0.001) { // Account for float precision
+            alert(`For this item, please enter a whole number quantity.`);
+            qtyInput.focus();
+            return;
+        }
+        
+        // NEW: Check for even-only validation
+        if (evenOnly) {
+            // Check if quantity is even
+            if (qty % 2 !== 0) {
+                alert("200 SHEETS Packing, please enter even quantities only (2, 4, 6, etc.).\n 200 شیٹس کی پیکنگ! صرف تعداد درج کریں (مثلاً 2، 4، 6 وغیرہ)۔ ");
+                qtyInput.focus();
+                return;
+            }
+        }
+    } else {
+        // For half quantities: check if it's a multiple of 0.5
+        if (Math.abs(qty * 2 - Math.round(qty * 2)) > 0.001) { // Account for float precision
+            alert(`For this item, please enter a quantity in increments of 0.5 (e.g., 0.5, 1.0, 1.5).`);
+            qtyInput.focus();
+            return;
+        }
+    }
+    // ✅ END OF NEW VALIDATION
+
+    // VALIDATION: Check if selected brand matches product brand
+    if (selectedBrand && p.displaySize && selectedBrand !== p.displaySize) {
+        alert(`Product not available`)
+        return
+    }
+
+    // VALIDATION: Check if selected color matches product color
+    if (selectedColor && p.color && selectedColor !== p.color) {
+        alert(`Color mismatch: Selected ${selectedColor} but product is ${p.color}`)
+        return
+    }
+
+    if(qty > p.maxQty){
+        qty = p.maxQty
+        qtyInput.value = qty
+        alert(`Maximum allowed quantity is ${p.maxQty}`)
+        return
+    }
+
+    // Create unique cart key
+    const cartKey = key + "_" + p.size + "_" + p.gsm + 
+                   (p.displaySize ? "_" + p.displaySize : "") + 
+                   (p.color ? "_" + p.color : "")
+    
+    const cartItem = { 
+        ...p, 
+        qty,
+        selectedColor: selectedColor,
+        selectedBrand: selectedBrand
+    }
+    
+    // Check if already in cart
+    if (cart[cartKey]) {
+        const newQty = cart[cartKey].qty + qty
+        if (newQty > p.maxQty) {
+            alert(`Maximum total quantity for this item is ${p.maxQty}. You already have ${cart[cartKey].qty} in cart.`)
+            return
+        }
+        cart[cartKey].qty = newQty
+    } else {
+        cart[cartKey] = cartItem
+    }
+    
+    renderCart()
+    updateCartBadge()
+    
+    // Show cart on mobile after adding item
+    if (window.innerWidth <= 768) {
+        openCart();
+    }
+    
+    // Visual feedback
+    const addBtn = document.querySelector(`[onclick="addToCart('${key}')"]`)
+    const originalText = addBtn.textContent
+    addBtn.textContent = "Added!"
+    addBtn.style.backgroundColor = "#1f8b3b"
+    
+    setTimeout(() => {
+        addBtn.textContent = originalText
+        addBtn.style.backgroundColor = ""
+    }, 1000)
+}// UPDATE CART RENDER FUNCTION FOR BRAND
 function renderCart(){
     const container = document.getElementById("cart-items")
     container.innerHTML = ""
@@ -2205,6 +3021,7 @@ function renderCart(){
         total += itemTotalPrice
         totalWeight += itemTotalWeight
         
+        // Build specifications line - UPDATED FOR BRAND
         let specs = `${item.size}, GSM ${item.gsm}`
         if (item.selectedBrand && item.selectedBrand !== '') {
             specs += `, ${item.selectedBrand}`
@@ -2234,419 +3051,22 @@ function renderCart(){
     document.getElementById("cart-total").innerText = `Total: Rs ${total} (${Math.round(totalWeight)} KG)`
 }
 
-function removeFromCart(cartKey){
-    delete cart[cartKey]
-    renderCart()
-    updateCartBadge()
-}
+let isOrderBeingPlaced = false; // ADD THIS LINE AT TOP
 
-function addToCart(key){
-    const qtyInput = document.getElementById(`qty_${key}`)
-    let rawQty = qtyInput.value;
-
-    const selectedSize = window[`size_${key}`]
-    const selectedGsm = window[`gsm_${key}`]
-    const selectedColor = window[`color_${key}`] || ''
-    const selectedBrand = window[`brand_${key}`] || ''
-
-    let variantKey = `${selectedSize}_${selectedGsm}`
-    
-    if (selectedBrand && selectedColor) {
-        variantKey = `${selectedSize}_${selectedGsm}_${selectedBrand}_${selectedColor}`
-    }
-    else if (selectedBrand) {
-        variantKey = `${selectedSize}_${selectedGsm}_${selectedBrand}`
-    }
-    else if (selectedColor) {
-        if (selectedBrand) {
-            variantKey = `${selectedSize}_${selectedGsm}_${selectedBrand}_${selectedColor}`
-        } else {
-            variantKey = `${selectedSize}_${selectedGsm}_${selectedColor}`
-        }
-    }
-    
-    let p = window[`map_${key}`][variantKey]
-    
-    if (!p) {
-        if (selectedBrand && selectedColor) {
-            variantKey = `${selectedSize}_${selectedGsm}_${selectedBrand}`
-            p = window[`map_${key}`][variantKey]
-        }
-        if (!p && selectedBrand && selectedColor) {
-            variantKey = `${selectedSize}_${selectedGsm}_${selectedColor}`
-            p = window[`map_${key}`][variantKey]
-            if (!p) {
-                variantKey = `${selectedSize}_${selectedGsm}_${selectedBrand}`
-                p = window[`map_${key}`][variantKey]
-            }
-        }
-        if (!p) {
-            variantKey = `${selectedSize}_${selectedGsm}`
-            p = window[`map_${key}`][variantKey]
-        }
-    }
-
-    if(!p){
-        alert("⚠️ ATTENTION: PRODUCT IS OUT OF STOCK ⚠️")
-        return
-    }
-
-    let qty = parseFloat(rawQty);
-    const allowHalf = p.halfQty === true;
-    const evenOnly = p.evenOnly === true;
-
-    if (isNaN(qty) || qty <= 0) {
-        alert("Please enter a valid quantity");
-        return;
-    }
-
-    if (!allowHalf) {
-        if (Math.abs(qty - Math.round(qty)) > 0.001) {
-            alert(`For this item, please enter a whole number quantity.`);
-            qtyInput.focus();
-            return;
-        }
-        
-        if (evenOnly) {
-            if (qty % 2 !== 0) {
-                alert("200 SHEETS Packing, please enter even quantities only (2, 4, 6, etc.).\n 200 شیٹس کی پیکنگ! صرف تعداد درج کریں (مثلاً 2، 4، 6 وغیرہ)۔ ");
-                qtyInput.focus();
-                return;
-            }
-        }
-    } else {
-        if (Math.abs(qty * 2 - Math.round(qty * 2)) > 0.001) {
-            alert(`For this item, please enter a quantity in increments of 0.5 (e.g., 0.5, 1.0, 1.5).`);
-            qtyInput.focus();
-            return;
-        }
-    }
-
-    if (selectedBrand && p.displaySize && selectedBrand !== p.displaySize) {
-        alert(`Product not available`)
-        return
-    }
-
-    if (selectedColor && p.color && selectedColor !== p.color) {
-        alert(`Color mismatch: Selected ${selectedColor} but product is ${p.color}`)
-        return
-    }
-
-    if(qty > p.maxQty){
-        qty = p.maxQty
-        qtyInput.value = qty
-        alert(`Maximum allowed quantity is ${p.maxQty}`)
-        return
-    }
-
-    const cartKey = key + "_" + p.size + "_" + p.gsm + 
-                   (p.displaySize ? "_" + p.displaySize : "") + 
-                   (p.color ? "_" + p.color : "")
-    
-    const cartItem = { 
-        ...p, 
-        qty,
-        selectedColor: selectedColor,
-        selectedBrand: selectedBrand
-    }
-    
-    if (cart[cartKey]) {
-        const newQty = cart[cartKey].qty + qty
-        if (newQty > p.maxQty) {
-            alert(`Maximum total quantity for this item is ${p.maxQty}. You already have ${cart[cartKey].qty} in cart.`)
-            return
-        }
-        cart[cartKey].qty = newQty
-    } else {
-        cart[cartKey] = cartItem
-    }
-    
-    renderCart()
-    updateCartBadge()
-    
-    if (window.innerWidth <= 768) {
-        openCart();
-    }
-    
-    const addBtn = document.querySelector(`[onclick="addToCart('${key}')"]`)
-    const originalText = addBtn.textContent
-    addBtn.textContent = "Added!"
-    addBtn.style.backgroundColor = "#1f8b3b"
-    
-    setTimeout(() => {
-        addBtn.textContent = originalText
-        addBtn.style.backgroundColor = ""
-    }, 1000)
-}
-
-// ============================================
-// CHECKOUT FUNCTIONS
-// ============================================
-
-function openCheckout(){
-    verifyCartPrices(); // Verify prices before checkout
-    
-    if(Object.keys(cart).length === 0){
-        alert("Your cart is empty")
-        return
-    }
-    
-    closeCart()
-    
-    document.getElementById("cust-name").value = ""
-    document.getElementById("cust-email").value = ""
-    document.getElementById("cust-phone").value = ""
-    document.getElementById("delivery-address").value = ""
-    
-    document.getElementById('shipping-self').checked = true;
-    updateShipping('self', false);
-    
-    document.getElementById("checkout-modal").classList.add("active")
-    document.body.style.overflow = "hidden"
-}
-
-function closeCheckout(){
-    document.getElementById("checkout-modal").classList.remove("active")
-    document.body.style.overflow = "auto"
-}
-
-function updateShipping(method, updateRadio = true){
-    currentShippingMethod = method;
-    const container = document.getElementById("delivery-address-container")
-    
-    const selfBtn = document.querySelector('label[for="shipping-self"]')
-    const openBtn = document.querySelector('label[for="shipping-delivery-open"]')
-    const bundleBtn = document.querySelector('label[for="shipping-delivery-bundle"]')
-
-    if (updateRadio) {
-        document.querySelector(`input[value="${method}"]`).checked = true;
-    }
-    
-    [selfBtn, openBtn, bundleBtn].forEach(btn => {
-        if (btn) btn.classList.remove("active")
-    })
-    
-    if (method === "open" || method === "bundle") {
-        container.style.display = "block"
-        if (method === "open" && openBtn) openBtn.classList.add("active")
-        if (method === "bundle" && bundleBtn) bundleBtn.classList.add("active")
-        calculateDeliveryCharges(method)
-    } else {
-        container.style.display = "none"
-        if (selfBtn) selfBtn.classList.add("active")
-        document.getElementById("delivery-charges").innerText = ""
-        updateCheckoutTotal(0)
-    }
-}
-
-function calculateDeliveryCharges(method = 'open'){
-    let totalWeight = 0
-    Object.values(cart).forEach(item => {
-        totalWeight += item.weight * item.qty
-    })
-    
-    let deliveryCharges = 0
-    let chargesText = ""
-    
-    if (method === 'open') {
-        let baseCharges = Math.max(Math.round(totalWeight * 3), 450)
-        
-        let productsTotal = 0
-        Object.values(cart).forEach(i => {
-            productsTotal += i.price * i.qty
-        })
-        
-        let currentTotal = productsTotal + baseCharges
-        
-        if (currentTotal % 100 === 0) {
-            deliveryCharges = baseCharges
-            chargesText = `Delivery Charges (Open): Rs ${deliveryCharges}`
-        } else {
-            let remainder = currentTotal % 100
-            let amountToAdd = 100 - remainder
-            deliveryCharges = baseCharges + amountToAdd
-            chargesText = `Delivery Charges (Open): Rs ${deliveryCharges}`
-        }
-        
-    } else if (method === 'bundle') {
-        let bundles = totalWeight / 70
-        let decimalPart = bundles % 1
-        
-        if (decimalPart <= 0.5) {
-            bundles = Math.floor(bundles)
-        } else {
-            bundles = Math.ceil(bundles)
-        }
-        
-        bundles = Math.max(1, bundles)
-        deliveryCharges = bundles * 250
-        chargesText = `Delivery Charges (Bundle): Rs ${deliveryCharges} (${bundles} bundles × Rs 250)`
-    }
-    
-    document.getElementById("delivery-charges").innerText = chargesText
-    updateCheckoutTotal(deliveryCharges)
-    return deliveryCharges
-}
-
-function updateCheckoutTotal(deliveryCharges){
-    let total = 0
-    Object.values(cart).forEach(i => {
-        total += i.price * i.qty
-    })
-    
-    const subtotal = total
-    total += deliveryCharges || 0
-    const totalWeight = Object.values(cart).reduce((sum, i) => sum + i.weight * i.qty, 0)
-    
-    document.getElementById("checkout-summary-box").innerHTML = generateSummaryText(subtotal, total, totalWeight, deliveryCharges)
-}
-
-function generateSummaryText(subtotal, total, totalWeight, deliveryCharges){
-    let summaryHtml = "<h4>Order Summary</h4>"
-    
-    summaryHtml += `<div class="summary-line"><span>Subtotal (${Object.keys(cart).length} Items)</span><span>Rs ${subtotal}</span></div>`
-    
-    const shippingText = deliveryCharges > 0 ? `Rs ${deliveryCharges}` : `FREE`
-    summaryHtml += `<div class="summary-line"><span>Shipping</span><span>${shippingText}</span></div>`
-    
-    summaryHtml += `<div class="summary-line" style="font-size: 0.9em; padding-top: 10px; border-top: 1px dashed #ddd;">
-                      <span>Total Weight</span><span>${Math.round(totalWeight)} KG</span></div>`
-    
-    summaryHtml += `<div class="summary-total"><span>Total</span><span>Rs ${total}</span></div>`
-    
-    summaryHtml += `<div style="border-top: 1px solid #eee; margin-top: 15px; padding-top: 10px; font-size: 0.85em;">`
-    summaryHtml += `<p style="margin: 0 0 8px 0; font-weight: 700;">Items in Cart:</p>`
-    Object.values(cart).forEach(i => {
-        const itemTotal = i.price * i.qty
-        summaryHtml += `<div style="margin-bottom: 5px; padding: 5px 0; border-bottom: 1px dashed #f0f0f0;">
-                          ${i.name} (${i.size}, ${i.gsm} GSM${i.selectedBrand ? `, ${i.selectedBrand}` : ''}${i.selectedColor ? `, ${i.selectedColor}` : ''})<br>
-                          <small>${i.qty} × Rs ${i.price} = Rs ${itemTotal}</small>
-                        </div>`
-    })
-    summaryHtml += `</div>`
-
-    return summaryHtml
-}
-
-function setupShippingListeners() {
-    const selfRadio = document.getElementById('shipping-self');
-    const openRadio = document.getElementById('shipping-delivery-open');
-    const bundleRadio = document.getElementById('shipping-delivery-bundle');
-    
-    if (selfRadio) {
-        selfRadio.addEventListener('change', function() {
-            if (this.checked) {
-                updateShipping('self');
-            }
-        });
-    }
-    
-    if (openRadio) {
-        openRadio.addEventListener('change', function() {
-            if (this.checked) {
-                updateShipping('open');
-            }
-        });
-    }
-    
-    if (bundleRadio) {
-        bundleRadio.addEventListener('change', function() {
-            if (this.checked) {
-                updateShipping('bundle');
-            }
-        });
-    }
-    
-    const selfLabel = document.querySelector('label[for="shipping-self"]');
-    const openLabel = document.querySelector('label[for="shipping-delivery-open"]');
-    const bundleLabel = document.querySelector('label[for="shipping-delivery-bundle"]');
-    
-    if (selfLabel) {
-        selfLabel.addEventListener('click', function() {
-            document.getElementById('shipping-self').checked = true;
-            updateShipping('self');
-        });
-    }
-    
-    if (openLabel) {
-        openLabel.addEventListener('click', function() {
-            document.getElementById('shipping-delivery-open').checked = true;
-            updateShipping('open');
-        });
-    }
-    
-    if (bundleLabel) {
-        bundleLabel.addEventListener('click', function() {
-            document.getElementById('shipping-delivery-bundle').checked = true;
-            updateShipping('bundle');
-        });
-    }
-}
-
-function setupPaymentListeners() {
-    const shopBtn = document.querySelector('label[for="pay-shop"]');
-    const bankBtn = document.querySelector('label[for="pay-bank"]');
-    const shopRadio = document.getElementById('pay-shop');
-    const bankRadio = document.getElementById('pay-bank');
-    
-    if (shopBtn) {
-        shopBtn.addEventListener('click', function() {
-            shopRadio.checked = true;
-            updatePaymentButtons();
-        });
-    }
-    
-    if (bankBtn) {
-        bankBtn.addEventListener('click', function() {
-            bankRadio.checked = true;
-            updatePaymentButtons();
-        });
-    }
-    
-    if (shopRadio) {
-        shopRadio.addEventListener('change', updatePaymentButtons);
-    }
-    
-    if (bankRadio) {
-        bankRadio.addEventListener('change', updatePaymentButtons);
-    }
-    
-    updatePaymentButtons();
-}
-
-function updatePaymentButtons() {
-    const shopLabel = document.querySelector('label[for="pay-shop"]');
-    const bankLabel = document.querySelector('label[for="pay-bank"]');
-    
-    if (document.getElementById('pay-shop').checked) {
-        shopLabel.classList.add('active');
-        bankLabel.classList.remove('active');
-    } else {
-        bankLabel.classList.add('active');
-        shopLabel.classList.remove('active');
-    }
-}
-
-// ============================================
-// ORDER PLACEMENT WITH ANTI-CACHING
-// ============================================
-
+// Updated placeOrder() function with link generation and email copy
 async function placeOrder(){
+    // ⬇️ ADD THESE 2 LINES AT THE START ⬇️
     const btn = document.querySelector('.whatsapp-btn');
-    if (btn.disabled) return;
-    
-    // Verify prices one last time before placing order
-    await verifyCartPrices();
-    
-    btn.innerHTML = '<span class="whatsapp-icon">⏳</span> Saving...';
-    btn.disabled = true;
-    
+    if (btn.disabled) return; else btn.innerHTML = '<span class="whatsapp-icon">⏳</span> Saving...', btn.disabled = true;
+    // Generate unique Order ID
     const timestamp = Date.now();
     const random = Math.random().toString(36).substr(2, 6).toUpperCase();
     const orderId = `HAYYAT-${timestamp}-${random}`;
     
+    // Generate invoice link
     const invoiceLink = `https://www.hayyatstore.com/order.html?id=${orderId}`;
     
+    // Number formatting function
     function formatNumber(num) {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
@@ -2659,8 +3079,7 @@ async function placeOrder(){
     const shippingElement = document.querySelector('input[name="shipping"]:checked');
     if (!shippingElement) {
         alert("Please select a shipping method");
-        btn.disabled = false;
-        btn.innerHTML = 'Place Order via WhatsApp';
+        btn.disabled = false; btn.innerHTML = 'Place Order via WhatsApp';
         return;
     }
     const shipping = shippingElement.value;
@@ -2668,27 +3087,25 @@ async function placeOrder(){
     if(!name){
         alert("Please enter your full name");
         document.getElementById("cust-name").focus();
-        btn.disabled = false;
-        btn.innerHTML = 'Place Order via WhatsApp';
+        btn.disabled = false; btn.innerHTML = 'Place Order via WhatsApp';
         return;
     }
 
     if(!phone || phone.length < 10){
         alert("Please enter a valid phone number");
         document.getElementById("cust-phone").focus();
-        btn.disabled = false;
-        btn.innerHTML = 'Place Order via WhatsApp';
+        btn.disabled = false; btn.innerHTML = 'Place Order via WhatsApp';
         return;
     }
 
     if((shipping === "open" || shipping === "bundle") && !address){
         alert("Please enter delivery address");
         document.getElementById("delivery-address").focus();
-        btn.disabled = false;
-        btn.innerHTML = 'Place Order via WhatsApp';
+        btn.disabled = false; btn.innerHTML = 'Place Order via WhatsApp';
         return;
     }
 
+    // Calculate order details
     let total = 0;
     let totalWeight = 0;
     const orderItems = [];
@@ -2699,6 +3116,7 @@ async function placeOrder(){
         total += itemTotal;
         totalWeight += itemWeight;
         
+        // Build specifications
         let specs = `${i.size}, GSM ${i.gsm}`;
         if (i.selectedBrand && i.selectedBrand !== '') {
             specs += `, ${i.selectedBrand}`;
@@ -2722,6 +3140,7 @@ async function placeOrder(){
     let deliveryCharges = 0;
     if(shipping === "open" || shipping === "bundle"){
         if (shipping === "open") {
+            // OPEN delivery logic
             let baseCharges = Math.max(Math.round(totalWeight * 3), 450);
             let currentTotalWithBase = total + baseCharges;
             
@@ -2733,6 +3152,7 @@ async function placeOrder(){
                 deliveryCharges = baseCharges + amountToAdd;
             }
         } else if (shipping === "bundle") {
+            // BUNDLE delivery logic
             let bundles = totalWeight / 70;
             let decimalPart = bundles % 1;
             
@@ -2749,9 +3169,11 @@ async function placeOrder(){
         total += deliveryCharges;
     }
 
+    // Build orderSummary for email (keep exactly same format as before)
     let orderSummary = "✅ *Order placed through www.hayyatstore.com*\n\n";
     orderSummary += "📄 *NEW PAPER ORDER REQUEST* 📄\n\n";
 
+    // ORDER SUMMARY AT THE TOP
     const subtotal = total - deliveryCharges;
     orderSummary += "*Order Summary:*\n";
     orderSummary += `Subtotal: Rs ${formatNumber(subtotal)}\n`;
@@ -2759,6 +3181,7 @@ async function placeOrder(){
     orderSummary += `*GRAND TOTAL: Rs ${formatNumber(total)}*\n`;
     orderSummary += `Total Weight: ${Math.round(totalWeight)} KG\n\n`;
 
+    // CUSTOMER DETAILS
     orderSummary += "*Customer Details:*\n";
     orderSummary += `👤 Name: ${name}\n`;
     orderSummary += `📱 Phone: ${phone}\n`;
@@ -2771,6 +3194,7 @@ async function placeOrder(){
     }
     orderSummary += `\n*Order Items (${Object.keys(cart).length} types):*\n`;
 
+    // ORDER ITEMS WITH FORMATTED PRICES
     Object.values(cart).forEach((i, index) => {
         const itemTotal = i.price * i.qty;
         const itemWeight = i.weight * i.qty;
@@ -2779,6 +3203,7 @@ async function placeOrder(){
         
         orderSummary += `${index + 1}. *${i.name}*\n`;
         
+        // Build specifications line
         let specs = `Size: ${i.size} | GSM: ${i.gsm}`;
         if (i.selectedBrand && i.selectedBrand !== '') {
             specs += ` | Brand: ${i.selectedBrand}`;
@@ -2794,6 +3219,7 @@ async function placeOrder(){
 
     orderSummary += `⏳ _Please confirm availability and provide payment details._`;
 
+    // Prepare order data for Google Sheets
     const orderData = {
         orderId: orderId,
         invoiceLink: invoiceLink,
@@ -2811,6 +3237,9 @@ async function placeOrder(){
     };
 
     try {
+        // --- ONE-CLICK BULLETPROOF LOGIC ---
+        
+        // 1. Prepare WhatsApp Message
         let whatsappMessage = `📦 *NEW ORDER - HAYYAT PAPER STORE*\n\n`;
         whatsappMessage += `Order #${orderId}\n`;
         whatsappMessage += `Customer: ${name}\n`;
@@ -2825,8 +3254,10 @@ async function placeOrder(){
 
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
+        // 2. OPEN WHATSAPP IMMEDIATELY (Before any 'await' calls to satisfy Safari)
         window.location.href = whatsappUrl;
 
+        // 3. START SAVING IN BACKGROUND (We don't 'await' here so the redirect isn't blocked)
         saveOrderToGoogleSheets(orderData).catch(err => console.error('Sheet Save Error:', err));
 
         const emailData = {
@@ -2848,6 +3279,7 @@ async function placeOrder(){
             body: JSON.stringify(emailData)
         }).catch(err => console.error('Email Backup Error:', err));
 
+        // 4. UI CLEANUP
         setTimeout(() => {
             closeCheckout();
             cart = {};
@@ -2865,6 +3297,7 @@ async function placeOrder(){
     }
 }
 
+// Function to save order to Google Sheets
 async function saveOrderToGoogleSheets(orderData) {
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbysHbzMzacuCiZp16PJO5Gnx8kN2asM2Te4yDavvSdXRUN2jfUwRvc-LCjRvKPGXbsG/exec';
     
@@ -2876,76 +3309,22 @@ async function saveOrderToGoogleSheets(orderData) {
         },
         body: JSON.stringify({
             action: 'createOrder',
-            order: orderData,
-            version: APP_VERSION,
-            timestamp: new Date().getTime()
+            order: orderData
         })
     });
     
+    // Note: no-cors mode doesn't allow reading response
+    // Assume success if no network error
     return { success: true };
 }
-
-// ============================================
-// UTILITY FUNCTIONS
-// ============================================
-
-function toggleCategory(categoryKey) {
-    const productsDiv = document.getElementById(`cat-${categoryKey}`);
-    const header = productsDiv.previousElementSibling;
-    
-    if (header.classList.contains("expanded")) {
-        productsDiv.style.maxHeight = "0";
-        header.classList.remove("expanded");
-    } else {
-        productsDiv.style.maxHeight = "5000px";
-        header.classList.add("expanded");
-    }
-}
-
-function expandAllCategories() {
-    const categories = document.querySelectorAll('.category-products');
-    categories.forEach(catDiv => {
-        catDiv.style.maxHeight = catDiv.scrollHeight + "px";
-        const header = catDiv.previousElementSibling;
-        if (header) header.classList.add("expanded");
-    });
-}
-
-// ============================================
-// INITIALIZATION
-// ============================================
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Clear any potentially cached product data
-    if (window.lunrStore) {
-        window.lunrStore = null;
-    }
-    
-    fetchProducts();
-    setupShippingListeners();
-    setupPaymentListeners();
-    
-    document.addEventListener('click', function(event) {
-        const cartContainer = document.getElementById('cart-container');
-        const cartBtn = document.getElementById('view-cart-btn');
-        
-        if (cartContainer.classList.contains('active') && 
-            !cartContainer.contains(event.target) && 
-            event.target !== cartBtn && 
-            !cartBtn.contains(event.target)) {
-            closeCart();
-        }
-    });
-});
-
+// Handle window resize
 window.addEventListener('resize', function() {
     if (window.innerWidth > 768) {
-        document.body.style.overflow = "auto";
+        document.body.style.overflow = "auto"
     }
-});
-
+})
 // Add CSS for textarea
-const style = document.createElement('style');
+const style = document.createElement('style')
 style.textContent = `
     #delivery-address {
         width: 100%;
@@ -2964,8 +3343,46 @@ style.textContent = `
         outline: none;
         box-shadow: 0 0 0 2px rgba(0, 76, 153, 0.1);
     }
-`;
-document.head.appendChild(style);
+`
+
+// Category expand/collapse function
+function toggleCategory(categoryKey) {
+    const productsDiv = document.getElementById(`cat-${categoryKey}`);
+    const header = productsDiv.previousElementSibling;
+    
+    if (header.classList.contains("expanded")) {
+        // Collapse
+        productsDiv.style.maxHeight = "0";
+        header.classList.remove("expanded");
+    } else {
+        // Expand - use fixed large value
+        productsDiv.style.maxHeight = "5000px"; // Large enough for all products
+        header.classList.add("expanded");
+    }
+}
+// Expand all categories after products are loaded
+function expandAllCategories() {
+    const categories = document.querySelectorAll('.category-products');
+    categories.forEach(catDiv => {
+        catDiv.style.maxHeight = catDiv.scrollHeight + "px";
+        const header = catDiv.previousElementSibling;
+        if (header) header.classList.add("expanded");
+    });
+}
+function updatePaymentButtons() {
+    const shopLabel = document.querySelector('label[for="pay-shop"]');
+    const bankLabel = document.querySelector('label[for="pay-bank"]');
+    
+    if (document.getElementById('pay-shop').checked) {
+        shopLabel.classList.add('active');
+        bankLabel.classList.remove('active');
+    } else {
+        bankLabel.classList.add('active');
+        shopLabel.classList.remove('active');
+    }
+}
+
+document.head.appendChild(style)
 </script>
 </body>
 </html>
