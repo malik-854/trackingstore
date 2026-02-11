@@ -13,15 +13,6 @@
 
   gtag('config', 'G-H2V1WJFV61');
 </script>
-
-<script>
-  // STEP 1: FORCE REFRESH EVERY 60 SECONDS
-  // We put this at the very top so it works even if the rest of the code is broken.
-  console.log("TESTING: Refresh timer started...");
-  setTimeout(function() {
-      window.location.href = window.location.href + "?update=" + Date.now();
-  }, 60000); 
-</script>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -1852,7 +1843,7 @@ async function fetchProducts(){
         document.getElementById('loading-indicator').style.display = 'block';
         
         // Try to fetch from Google Sheets
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:V?key=${API_KEY}&t=${Date.now()}`;
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:V?key=${API_KEY}`;
         console.log('Fetching from URL:', url);
         
         const response = await fetch(url);
@@ -1905,13 +1896,6 @@ fetchAnnouncements();  // Load announcements
         document.getElementById('product-list').style.display = 'grid';
         document.getElementById('view-cart-btn').style.display = 'flex';
     }
-	// --- REFRESH LOGIC START ---
-  console.log("Refresh timer started for 60 seconds...");
-  setTimeout(function() {
-      console.log("Refreshing now!");
-      location.reload();
-  }, 60000); 
-  // --- REFRESH LOGIC END ---
 }
 
 async function fetchAnnouncements() {
@@ -2149,7 +2133,7 @@ function searchProducts(query){
 
 // After rendering products
 setTimeout(() => {
-    //initializeAllProducts()
+    initializeAllProducts()
 }, 100)
 
 // Helper function for color button styling
@@ -3399,10 +3383,6 @@ function updatePaymentButtons() {
 }
 
 document.head.appendChild(style)
-// This will automatically refresh the page every 60 seconds (1 minute)
-setTimeout(function() {
-    location.reload();
-}, 60000);
 </script>
 </body>
 </html>
