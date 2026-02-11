@@ -2924,9 +2924,15 @@ async function addToCart(key){
                 console.log('Fresh price:', freshPrice, 'Current price:', currentPrice);
                 
                 if (freshPrice > 0 && currentPrice > 0 && freshPrice !== currentPrice) {
-                    alert(`⚠️ PRICE UPDATED!\nThis product is now Rs ${freshPrice}/KG\nPlease refresh the page to see current prices.`);
-                    return;
-                }
+    alert(`⚠️ PRICE UPDATED / قیمت تبدیل ہو گئی ہے!\n\n` +
+          `This product is now Rs ${freshPrice}/KG\n` +
+          `اس پروڈکٹ کی نئی قیمت ${freshPrice} روپے فی کلو ہے۔\n\n` +
+          `Please refresh the page to see current prices.\n` +
+          `تازہ ترین قیمتیں دیکھنے کے لیے پیج کو ریفریش کریں۔`);
+    
+    window.location.reload(); // Refreshing automatically is better for the user
+    return;
+}
             }
         }
     } catch(e) {
