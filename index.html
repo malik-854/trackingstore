@@ -1347,48 +1347,7 @@ body {
 </style>
 </head>
 <body>
-<script>
-// Auto-refresh inactive tabs after 1 minute - EXPOSED FOR TESTING
-window.lastActiveTime = Date.now();
-window.REFRESH_TIMEOUT = 1 * 60 * 1000; // 1 minute for testing
 
-// Reset timer when user interacts with page
-window.resetActiveTimer = function() {
-    window.lastActiveTime = Date.now();
-    console.log('Timer reset - Last active:', new Date(window.lastActiveTime).toLocaleTimeString());
-}
-
-// Check if tab has been inactive for too long
-window.checkInactivity = function() {
-    const inactiveTime = Date.now() - window.lastActiveTime;
-    console.log('Inactive seconds:', Math.round(inactiveTime/1000), '/', window.REFRESH_TIMEOUT/1000);
-    if (inactiveTime >= window.REFRESH_TIMEOUT) {
-        console.log('⚠️ REFRESHING PAGE NOW ⚠️');
-        window.location.reload(true);
-    }
-}
-
-// Listen for user activity
-window.addEventListener('load', window.resetActiveTimer);
-window.addEventListener('mousemove', window.resetActiveTimer);
-window.addEventListener('keydown', window.resetActiveTimer);
-window.addEventListener('click', window.resetActiveTimer);
-window.addEventListener('scroll', window.resetActiveTimer);
-window.addEventListener('touchstart', window.resetActiveTimer);
-
-// Check when tab becomes visible again
-document.addEventListener('visibilitychange', function() {
-    if (!document.hidden) {
-        console.log('Tab became visible - checking inactivity');
-        window.checkInactivity();
-    }
-});
-
-// Also check when phone unlocks / app resumes
-window.addEventListener('focus', window.checkInactivity);
-
-console.log('✅ Refresh timer active -', window.REFRESH_TIMEOUT/1000, 'seconds');
-</script>
 <!-- Add this RIGHT AFTER <body> tag -->
 <div id="groupBanner" style="
     background: linear-gradient(135deg, #ff8400, #ff8400);
@@ -1804,15 +1763,9 @@ function setupPaymentListeners() {
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if we need to force refresh (from visibility change)
-    const forceRefresh = sessionStorage.getItem('forceRefresh') === 'true';
-    if (forceRefresh) {
-        sessionStorage.removeItem('forceRefresh');
-    }
-    
     fetchProducts();
     setupShippingListeners();
-    setupPaymentListeners();
+setupPaymentListeners();
     
     // Close cart when clicking outside on mobile
     document.addEventListener('click', function(event) {
@@ -1826,13 +1779,6 @@ document.addEventListener('DOMContentLoaded', function() {
             closeCart();
         }
     });
-});
-
-// Also refresh when page is shown from bfcache (back/forward cache)
-window.addEventListener('pageshow', function(event) {
-    if (event.persisted) {
-        window.location.reload(true);
-    }
 });
 
 function setupShippingListeners() {
@@ -1893,18 +1839,11 @@ function setupShippingListeners() {
 }
 async function fetchProducts(){
     try {
-		        // Clear any existing cached data
-        if (window.cachedProducts) {
-            delete window.cachedProducts;
-        }
-        
-        // Add cache-busting parameter to URL
-        const cacheBuster = Date.now();
         // Show loading indicator
         document.getElementById('loading-indicator').style.display = 'block';
         
         // Try to fetch from Google Sheets
-                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:V?key=${API_KEY}&_=${cacheBuster}`;
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:V?key=${API_KEY}`;
         console.log('Fetching from URL:', url);
         
         const response = await fetch(url);
@@ -3346,7 +3285,6 @@ async function placeOrder(){
             cart = {};
             renderCart();
             updateCartBadge();
-			sessionStorage.setItem('orderPlaced', 'true');
             btn.disabled = false;
             btn.innerHTML = 'Place Order via WhatsApp';
         }, 2000);
@@ -3422,19 +3360,6 @@ function toggleCategory(categoryKey) {
         header.classList.add("expanded");
     }
 }
-// Clear old data on page load
-window.addEventListener('load', function() {
-    // Clear any cached Google Sheets responses
-    if ('caches' in window) {
-        caches.keys().then(function(names) {
-            names.forEach(function(name) {
-                if (name.includes('googleapis') || name.includes('sheets')) {
-                    caches.delete(name);
-                }
-            });
-        });
-    }
-});
 // Expand all categories after products are loaded
 function expandAllCategories() {
     const categories = document.querySelectorAll('.category-products');
@@ -3458,36 +3383,6 @@ function updatePaymentButtons() {
 }
 
 document.head.appendChild(style)
-</script>
-	<script>
-// Final check: Force refresh if page is in background too long
-let backgroundTimer = null;
-let isPageVisible = !document.hidden;
-
-// Reset background timer when page becomes visible
-document.addEventListener('visibilitychange', function() {
-    isPageVisible = !document.hidden;
-    
-    if (isPageVisible) {
-        if (backgroundTimer) {
-            clearTimeout(backgroundTimer);
-            backgroundTimer = null;
-        }
-    } else {
-        // Page went to background - start 1 minute timer (testing)
-        backgroundTimer = setTimeout(function() {
-            // Only refresh if no order was placed during this session
-            if (!sessionStorage.getItem('orderPlaced')) {
-                window.location.reload(true);
-            }
-        }, 1 * 60 * 1000);
-    }
-});
-
-// Clear order placed flag after 1 hour
-setTimeout(function() {
-    sessionStorage.removeItem('orderPlaced');
-}, 60 * 60 * 1000);
 </script>
 </body>
 </html>
