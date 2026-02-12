@@ -3018,7 +3018,7 @@ async function addToCart(key){
     updateCartBadge()
     
     if (window.innerWidth <= 768) {
-        openCart();
+        toggleCart();
     }
     
     const addBtn = document.querySelector(`[onclick="addToCart('${key}')"]`)
