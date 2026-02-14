@@ -1639,8 +1639,7 @@ DISPLAY_SIZE:17,      // Column R
     DISCOUNT_TAG:18,      // ADD THIS - Column S
     NEW_TAG:19,            // This is Column T (index 19)
     HALF_QTY:20,
-    EVEN_ONLY:21,
-	ONEPOINTFIVE_ONLY:22  // ADD THIS - Column W
+    EVEN_ONLY:21            
 }
 
 // Function to get display size based on category
@@ -1844,7 +1843,7 @@ async function fetchProducts(){
         document.getElementById('loading-indicator').style.display = 'block';
         
         // Try to fetch from Google Sheets
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:W?key=${API_KEY}`;
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:V?key=${API_KEY}`;
         console.log('Fetching from URL:', url);
         
         const response = await fetch(url);
@@ -2028,8 +2027,7 @@ function group(rows){
     discountTag: r[COL.DISCOUNT_TAG] || '',      // ADD THIS
     newTag: r[COL.NEW_TAG] || '',               // Existing line
     halfQty: (r[COL.HALF_QTY] || '').toUpperCase() === 'YES',
-    evenOnly: (r[COL.EVEN_ONLY] || '').toUpperCase() === 'YES',  // NEW LINE 
-			    onePointFiveOnly: (r[COL.ONEPOINTFIVE_ONLY] || '').toUpperCase() === 'YES'  // ADD THIS LINE
+    evenOnly: (r[COL.EVEN_ONLY] || '').toUpperCase() === 'YES'  // NEW LINE               
         })
     })
     return g
@@ -2162,7 +2160,6 @@ function getColorStyle(colorName) {
 
 // Helper function to get quantity step
 function getQuantityStep(product) {
-	if (product.onePointFiveOnly) return '1.5';  // ADD THIS FIRST
     if (product.evenOnly) return '2';
     if (product.halfQty) return '0.5';
     return '1';
@@ -2335,12 +2332,7 @@ function renderProducts(groups, isSearch = false){
 
     <div class="qty-row">
         <div class="qty-input">
-            <input type="number" 
-   id="qty_${k}" 
-   value="${g.variations[0].onePointFiveOnly ? '1.5' : (g.variations[0].evenOnly ? '2' : (g.variations[0].halfQty ? '0.5' : '1'))}" 
-   min="${g.variations[0].onePointFiveOnly ? '1.5' : (g.variations[0].halfQty ? '0.5' : '1')}" 
-   max="999" 
-   step="${getQuantityStep(g.variations[0])}">
+            <input type="number" id="qty_${k}" value="${g.variations[0].evenOnly ? '2' : '1'}" min="${g.variations[0].halfQty ? '0.5' : '1'}" max="999" step="${getQuantityStep(g.variations[0])}">
         </div>
         <button class="btn-cart" onclick="addToCart('${k}')">
             Add to Cart
@@ -2394,12 +2386,7 @@ function renderProducts(groups, isSearch = false){
 
     <div class="qty-row">
         <div class="qty-input">
-            <input type="number" 
-   id="qty_${k}" 
-   value="${g.variations[0].onePointFiveOnly ? '1.5' : (g.variations[0].evenOnly ? '2' : (g.variations[0].halfQty ? '0.5' : '1'))}" 
-   min="${g.variations[0].onePointFiveOnly ? '1.5' : (g.variations[0].halfQty ? '0.5' : '1')}" 
-   max="999" 
-   step="${getQuantityStep(g.variations[0])}">
+            <input type="number" id="qty_${k}" value="${g.variations[0].evenOnly ? '2' : '1'}" min="${g.variations[0].halfQty ? '0.5' : '1'}" max="999" step="${getQuantityStep(g.variations[0])}">
         </div>
         <button class="btn-cart" onclick="addToCart('${k}')">
             Add to Cart
@@ -2986,63 +2973,34 @@ async function addToCart(key){
     let qty = parseFloat(rawQty);
     const allowHalf = p.halfQty === true;
     const evenOnly = p.evenOnly === true;
-	const onePointFiveOnly = p.onePointFiveOnly === true;  // ADD THIS
 
     if (isNaN(qty) || qty <= 0) {
         alert("Please enter a valid quantity");
         return;
     }
 
-// ✅ START OF NEW VALIDATION: Check if quantity is valid
-let qty = parseFloat(rawQty);
-const allowHalf = p.halfQty === true;
-const evenOnly = p.evenOnly === true;
-const onePointFiveOnly = p.onePointFiveOnly === true; 
-
-if (isNaN(qty) || qty <= 0) {
-    alert("Please enter a valid quantity");
-    return;
-}
-
-// 1. Check for 1.5 Multiples first
-if (onePointFiveOnly) {
-    const dividedByOnePointFive = qty / 1.5;
-    // We use a small epsilon (0.001) to handle floating point math issues
-    if (Math.abs(dividedByOnePointFive - Math.round(dividedByOnePointFive)) > 0.001) {
-        alert("For this item, please enter quantities in multiples of 1.5 (1.5, 3, 4.5, 6, etc.)");
-        qtyInput.focus();
-        return; // Stop execution here
-    }
-    // If it passes the 1.5 check, we usually want to skip the other rules
-    // so we return or use an 'else' for the rest.
-} 
-
-// 2. Check for Whole Numbers / Even Numbers (Only if NOT a 1.5 item)
-else if (!allowHalf) {
-    if (Math.abs(qty - Math.round(qty)) > 0.001) {
-        alert(`For this item, please enter a whole number quantity.`);
-        qtyInput.focus();
-        return;
-    }
-    
-    if (evenOnly) {
-        if (qty % 2 !== 0) {
-            alert("200 SHEETS Packing, please enter even quantities only (2, 4, 6, etc.).");
+    if (!allowHalf) {
+        if (Math.abs(qty - Math.round(qty)) > 0.001) {
+            alert(`For this item, please enter a whole number quantity.`);
+            qtyInput.focus();
+            return;
+        }
+        
+        if (evenOnly) {
+            if (qty % 2 !== 0) {
+                alert("200 SHEETS Packing, please enter even quantities only (2, 4, 6, etc.).\n 200 شیٹس کی پیکنگ! صرف تعداد درج کریں (مثلاً 2، 4، 6 وغیرہ)۔ ");
+                qtyInput.focus();
+                return;
+            }
+        }
+    } else {
+        if (Math.abs(qty * 2 - Math.round(qty * 2)) > 0.001) {
+            alert(`For this item, please enter a quantity in increments of 0.5 (e.g., 0.5, 1.0, 1.5).`);
             qtyInput.focus();
             return;
         }
     }
-} 
-
-// 3. Check for Half Quantities (0.5 increments)
-else {
-    if (Math.abs(qty * 2 - Math.round(qty * 2)) > 0.001) {
-        alert(`For this item, please enter a quantity in increments of 0.5 (e.g., 0.5, 1.0, 1.5).`);
-        qtyInput.focus();
-        return;
-    }
-}
-// ✅ END OF NEW VALIDATION
+    // ✅ END OF NEW VALIDATION
 
     // VALIDATION: Check if selected brand matches product brand
     if (selectedBrand && p.displaySize && selectedBrand !== p.displaySize) {
@@ -3380,7 +3338,7 @@ async function placeOrder(){
             orderWeight: Math.round(totalWeight)
         };
 
-        fetch('https://script.google.com/macros/s/AKfycbzinoq17B81tlIND-XpYNZ74CFS27RCMeZAreKAGqzwRY3HOMMnqD3SKdaQkTxg7euP/exec', {
+        fetch('https://script.google.com/macros/s/AKfycbw-h33gLXwPGRdnlURFncIhf3W8AS55ikyJN8Db4IZaydA4BwXxyG4gkSghUlluOznFWg/exec', {
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
