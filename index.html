@@ -2394,7 +2394,12 @@ function renderProducts(groups, isSearch = false){
 
     <div class="qty-row">
         <div class="qty-input">
-            <input type="number" id="qty_${k}" value="${g.variations[0].evenOnly ? '2' : '1'}" min="${g.variations[0].halfQty ? '0.5' : '1'}" max="999" step="${getQuantityStep(g.variations[0])}">
+            <input type="number" 
+   id="qty_${k}" 
+   value="${g.variations[0].onePointFiveOnly ? '1.5' : (g.variations[0].evenOnly ? '2' : (g.variations[0].halfQty ? '0.5' : '1'))}" 
+   min="${g.variations[0].onePointFiveOnly ? '1.5' : (g.variations[0].halfQty ? '0.5' : '1')}" 
+   max="999" 
+   step="${getQuantityStep(g.variations[0])}">
         </div>
         <button class="btn-cart" onclick="addToCart('${k}')">
             Add to Cart
