@@ -2988,10 +2988,11 @@ async function addToCart(key){
         return;
     }
 
-	// ADD THIS NEW VALIDATION BLOCK
+// ADD THIS NEW VALIDATION BLOCK
 if (onePointFiveOnly) {
-    // Check if quantity is multiple of 1.5 (1.5, 3, 4.5, 6, etc.)
-    if (Math.abs((qty * 2) % 3) > 0.001) {  // Multiple of 1.5 means (qty * 2) is divisible by 3
+    // Check if (qty / 1.5) is an integer
+    const dividedByOnePointFive = qty / 1.5;
+    if (Math.abs(dividedByOnePointFive - Math.round(dividedByOnePointFive)) > 0.001) {
         alert("For this item, please enter quantities in multiples of 1.5 (1.5, 3, 4.5, 6, etc.)");
         qtyInput.focus();
         return;
