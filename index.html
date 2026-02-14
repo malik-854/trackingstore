@@ -1639,7 +1639,8 @@ DISPLAY_SIZE:17,      // Column R
     DISCOUNT_TAG:18,      // ADD THIS - Column S
     NEW_TAG:19,            // This is Column T (index 19)
     HALF_QTY:20,
-    EVEN_ONLY:21            
+    EVEN_ONLY:21,
+	ONEPOINTFIVE_ONLY:22  // ADD THIS - Column W
 }
 
 // Function to get display size based on category
@@ -1843,7 +1844,7 @@ async function fetchProducts(){
         document.getElementById('loading-indicator').style.display = 'block';
         
         // Try to fetch from Google Sheets
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:V?key=${API_KEY}`;
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:W?key=${API_KEY}`;
         console.log('Fetching from URL:', url);
         
         const response = await fetch(url);
@@ -2027,7 +2028,8 @@ function group(rows){
     discountTag: r[COL.DISCOUNT_TAG] || '',      // ADD THIS
     newTag: r[COL.NEW_TAG] || '',               // Existing line
     halfQty: (r[COL.HALF_QTY] || '').toUpperCase() === 'YES',
-    evenOnly: (r[COL.EVEN_ONLY] || '').toUpperCase() === 'YES'  // NEW LINE               
+    evenOnly: (r[COL.EVEN_ONLY] || '').toUpperCase() === 'YES',  // NEW LINE 
+			    onePointFiveOnly: (r[COL.ONEPOINTFIVE_ONLY] || '').toUpperCase() === 'YES'  // ADD THIS LINE
         })
     })
     return g
@@ -2160,6 +2162,7 @@ function getColorStyle(colorName) {
 
 // Helper function to get quantity step
 function getQuantityStep(product) {
+	if (product.onePointFiveOnly) return '1.5';  // ADD THIS FIRST
     if (product.evenOnly) return '2';
     if (product.halfQty) return '0.5';
     return '1';
@@ -2332,7 +2335,12 @@ function renderProducts(groups, isSearch = false){
 
     <div class="qty-row">
         <div class="qty-input">
-            <input type="number" id="qty_${k}" value="${g.variations[0].evenOnly ? '2' : '1'}" min="${g.variations[0].halfQty ? '0.5' : '1'}" max="999" step="${getQuantityStep(g.variations[0])}">
+            <input type="number" 
+       id="qty_${key}" 
+       value="${g.variations[0].onePointFiveOnly ? '1.5' : (g.variations[0].evenOnly ? '2' : (g.variations[0].halfQty ? '0.5' : '1'))}" 
+       min="${g.variations[0].onePointFiveOnly ? '1.5' : (g.variations[0].halfQty ? '0.5' : '1')}" 
+       max="999" 
+       step="${getQuantityStep(g.variations[0])}">
         </div>
         <button class="btn-cart" onclick="addToCart('${k}')">
             Add to Cart
@@ -2978,6 +2986,16 @@ async function addToCart(key){
         alert("Please enter a valid quantity");
         return;
     }
+
+	// ADD THIS NEW VALIDATION BLOCK
+if (onePointFiveOnly) {
+    // Check if quantity is multiple of 1.5 (1.5, 3, 4.5, 6, etc.)
+    if (Math.abs((qty * 2) % 3) > 0.001) {  // Multiple of 1.5 means (qty * 2) is divisible by 3
+        alert("For this item, please enter quantities in multiples of 1.5 (1.5, 3, 4.5, 6, etc.)");
+        qtyInput.focus();
+        return;
+    }
+}
 
     if (!allowHalf) {
         if (Math.abs(qty - Math.round(qty)) > 0.001) {
